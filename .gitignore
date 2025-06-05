@@ -1,0 +1,19 @@
+# Ignorar node_modules de subproyectos
+switkor-frontend/node_modules/
+switkor-backend/node_modules/
+
+# Archivos temporales y de construcción
+switkor-frontend/.next/
+switkor-frontend/out/
+switkor-frontend/.vercel/
+switkor-backend/dist/
+switkor-backend/.temp/
+switkor-backend/.tmp/
+
+# Archivos de entorno
+**/.env*
+*.log
+
+# VSCode
+.vscode/
+.DS_Store
