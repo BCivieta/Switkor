@@ -30,13 +30,13 @@ export default function LandingPage() {
         <div className="flex gap-2">
           <Link
             href="/login"
-            className="px-4 py-2 rounded-full border border-green-500 text-green-500 hover:bg-green-50"
+            className="px-4 py-2 rounded-full border border-emerald-500 text-emerald-500 hover:bg-emerald-50"
           >
             Iniciar sesión
           </Link>
           <Link
             href="/login"
-            className="px-4 py-2 rounded-full bg-green-500 text-white hover:bg-green-600"
+            className="px-4 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-600"
           >
             Registrarse
           </Link>
@@ -63,7 +63,7 @@ export default function LandingPage() {
         <div className="mt-8 text-center">
           <Link
             href="/login"
-            className="bg-green-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-600"
+            className="bg-emerald-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-emerald-600"
           >
             EMPIEZA GRATIS
           </Link>
@@ -91,25 +91,25 @@ export default function LandingPage() {
         <h2 className="text-2xl font-bold text-center mb-10"> ¿Por qué elegir Switkor?</h2>
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
-            <BoltIcon className="w-8 h-8 text-green-600" />
+            <BoltIcon className="w-8 h-8 text-emerald-600" />
             <p>
               <strong>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
-            <ClockIcon className="w-8 h-8 text-green-600" />
+            <ClockIcon className="w-8 h-8 text-emerald-600" />
             <p>
               <strong>Ahorra tiempo y esfuerzo</strong> en la planificación. Solo rellena tu perfil y listo.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
-            <AdjustmentsVerticalIcon className="w-8 h-8 text-green-600" />
+            <AdjustmentsVerticalIcon className="w-8 h-8 text-emerald-600" />
             <p>
               <strong>Adáptate a tu carga semanal.</strong> Cada semana el sistema ajusta tu plan.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
-            <ShareIcon className="w-8 h-8 text-green-600" />
+            <ShareIcon className="w-8 h-8 text-emerald-600" />
             <p>
               <strong>Comparte tu progreso</strong> con quien quieras.
             </p>
@@ -122,34 +122,34 @@ export default function LandingPage() {
         <h2 className="text-2xl font-bold text-center mb-10">Nuestros planes</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
-            <span className="absolute top-2 left-2 text-xs font-bold bg-green-100 text-green-800 px-2 py-1 rounded-full">
+            <span className="absolute top-2 left-2 text-xs font-bold bg-green-100 text-emerald-800 px-2 py-1 rounded-full">
               Gratuito
             </span>
             <h3 className="font-bold text-lg mb-4 mt-4">Plan Gratuito</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Generador básico de planes</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Acceso limitado a funciones</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Registro gratuito</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso limitado a funciones</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Registro gratuito</li>
             </ul>
             <p className="font-semibold mb-2">0 € / mes</p>
-            <Link href="/login" className="inline-block bg-green-100 text-green-700 font-medium px-4 py-2 rounded-full">
+            <Link href="/login" className="inline-block bg-green-100 text-emerald-700 font-medium px-4 py-2 rounded-full">
               Empieza gratis
             </Link>
           </div>
 
-          <div className="relative border-2 border-green-500 rounded-xl p-6 shadow-xl text-center bg-green-50">
+          <div className="relative border-2 border-emerald-500 rounded-xl p-6 shadow-xl text-center bg-green-50">
             <span className="absolute top-2 left-2 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
               El más popular
             </span>
             <h3 className="font-bold text-lg mb-4 mt-4">Plan Premium Individual</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Planes personalizados</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Estadísticas y seguimiento</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Integración con wearables</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Comunidad global</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Planes personalizados</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Estadísticas y seguimiento</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Integración con wearables</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad global</li>
             </ul>
             <p className="font-semibold mb-2">12,99 € / mes</p>
-            <Link href="/login" className="inline-block bg-green-500 text-white font-medium px-4 py-2 rounded-full">
+            <Link href="/login" className="inline-block bg-emerald-500 text-white font-medium px-4 py-2 rounded-full">
               Quiero ser premium
             </Link>
           </div>
@@ -160,12 +160,12 @@ export default function LandingPage() {
             </span>
             <h3 className="font-bold text-lg mb-4 mt-4">Plan Compartido</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Entrenamiento coordinado</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Acceso premium para miembros</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-green-500" /> Comunidad privada</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Entrenamiento coordinado</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso premium para miembros</li>
+              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad privada</li>
             </ul>
             <p className="font-semibold mb-2">29,99 € / grupo</p>
-            <Link href="/login" className="inline-block bg-green-100 text-green-700 font-medium px-4 py-2 rounded-full">
+            <Link href="/login" className="inline-block bg-green-100 text-emerald-700 font-medium px-4 py-2 rounded-full">
               Registrar mi equipo
             </Link>
           </div>
@@ -197,7 +197,7 @@ export default function LandingPage() {
             placeholder="Escribe tu propuesta o duda..."
             className="w-full rounded border px-4 py-2 min-h-[120px]"
           />
-          <button className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+          <button className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600">
             Enviar mensaje
           </button>
         </form>

@@ -8,31 +8,43 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
 
-interface LoginDto {
+interface RegisterDto {
   email: string;
+  name: string;
   password: string;
+  confirmPassword: string;
+  termsAccepted: boolean;
 }
 
-export default function LoginPage() {
-  const { register, handleSubmit } = useForm<LoginDto>();
+export default function RegisterPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterDto>();
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const onSubmit = async (data: LoginDto) => {
+  const onSubmit = async (data: RegisterDto) => {
+    if (data.password !== data.confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        data,
-      );
-      localStorage.setItem('token', res.data.access_token);
-      router.push('/dashboard');
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+        email: data.email,
+        name: data.name,
+        password: data.password,
+      });
+      toast.success('¡Registro exitoso! Ahora puedes iniciar sesión');
+      router.push('/login');
     } catch (err) {
-    const axiosErr = err as AxiosError<{ message: string }>;
-    setError(
-      axiosErr.response?.data?.message ?? 'Error inesperado',
-    );
-  }
+      const axiosErr = err as AxiosError<{ message: string }>;
+      setError(axiosErr.response?.data?.message ?? 'Error inesperado');
+    }
   };
 
   return (
@@ -50,7 +62,6 @@ export default function LoginPage() {
 
       {/* ---------- Contenido principal ---------- */}
       <main className="mx-auto w-full max-w-lg flex-1 px-6">
-        {/* Logo */}
         <div className="flex justify-center">
           <Image
             src="/LogoSinFondo.png"
@@ -61,21 +72,19 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Claim */}
         <p className="mb-8 text-center text-lg font-semibold text-sky-900">
-          Accede a tu cuenta y continúa tu planificación personalizada.
+          Crea tu cuenta y empieza con tu planificación personalizada.
         </p>
 
-        {/* Card de login */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 rounded-3xl border border-gray-200 bg-white p-10 shadow-lg"
         >
-          <h2 className="text-2xl font-bold text-sky-900">Iniciar sesión</h2>
+          <h2 className="text-2xl font-bold text-sky-900">Registrarse</h2>
 
           <div>
             <label htmlFor="email" className="mb-1 block font-medium">
-              Usuario:
+              Correo electrónico:
             </label>
             <input
               id="email"
@@ -83,6 +92,19 @@ export default function LoginPage() {
               placeholder="nombre@mail.com"
               className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
               {...register('email', { required: true })}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="name" className="mb-1 block font-medium">
+              Nombre de usuario:
+            </label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Blanca"
+              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              {...register('name', { required: true })}
             />
           </div>
 
@@ -99,46 +121,43 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Recordarme + error */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-sky-600 accent-sky-600"
-              />
-              Recuérdame
+          <div>
+            <label htmlFor="confirmPassword" className="mb-1 block font-medium">
+              Repite la contraseña:
             </label>
-
-            {error && (
-              <span className="text-sm font-medium text-red-600">{error}</span>
-            )}
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="123456B."
+              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              {...register('confirmPassword', { required: true })}
+            />
           </div>
 
-          {/* Botón entrar */}
+          <div className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              {...register('termsAccepted', { required: true })}
+              className="h-4 w-4 rounded border-gray-300 text-sky-600 accent-sky-600"
+            />
+            <span>Acepto la política de privacidad y cookies</span>
+          </div>
+          {errors.termsAccepted && (
+            <p className="text-red-600 text-sm mt-1">
+              Debes aceptar la política de privacidad.
+            </p>
+          )}
+
+          {error && (
+            <span className="block text-sm font-medium text-red-600">{error}</span>
+          )}
+
           <button
             type="submit"
             className="w-full rounded-xl bg-emerald-500 py-3 text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
-            Entrar
+            Crear cuenta
           </button>
-
-          {/* Link recuperar contraseña */}
-          <div className="text-center">
-            <Link
-              href="#"
-              className="text-sm font-medium text-sky-700 underline hover:text-sky-900"
-            >
-              ¿Has olvidado tu contraseña?
-            </Link>
-          </div>
-
-          {/* Botón registro */}
-          <Link
-            href="/register"
-            className="block w-full rounded-xl border-2 border-emerald-500 py-3 text-center text-lg font-semibold text-emerald-600 shadow hover:bg-emerald-50"
-          >
-            ¿No tienes cuenta? Regístrate
-          </Link>
         </form>
       </main>
 
