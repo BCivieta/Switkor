@@ -12,3 +12,12 @@ export interface RegisterDto extends LoginDto {
 export interface LoginResponse {
   access_token: string;
 }
+
+// JWT Payload
+export interface JwtPayload {
+  sub: number;
+  email: string;
+  name?: string;
+  iat: number;
+  exp: number;
+}

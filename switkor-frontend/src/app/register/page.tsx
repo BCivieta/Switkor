@@ -72,69 +72,73 @@ export default function RegisterPage() {
           />
         </div>
 
-        <p className="mb-8 text-center text-lg font-semibold text-sky-900">
+        <p className="mb-8 text-center text-base sm:text-lg font-semibold text-sky-900">
           Crea tu cuenta y empieza con tu planificación personalizada.
         </p>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 rounded-3xl border border-gray-200 bg-white p-10 shadow-lg"
+          className="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-lg"
         >
-          <h2 className="text-2xl font-bold text-sky-900">Registrarse</h2>
+          <h2 className="text-lg sm:text-2xl font-bold text-sky-900">Registrarse</h2>
 
           <div>
-            <label htmlFor="email" className="mb-1 block font-medium">
+            <label htmlFor="email" className="mb-1 block text-sm sm:text-base font-medium">
               Correo electrónico:
             </label>
             <input
               id="email"
               type="email"
               placeholder="nombre@mail.com"
-              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500 
+              text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
               {...register('email', { required: true })}
             />
           </div>
 
           <div>
-            <label htmlFor="name" className="mb-1 block font-medium">
+            <label htmlFor="name" className="mb-1 block text-sm sm:text-base font-medium">
               Nombre de usuario:
             </label>
             <input
               id="name"
               type="text"
               placeholder="Blanca"
-              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
+               text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
               {...register('name', { required: true })}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block font-medium">
+            <label htmlFor="password" className="mb-1 block text-sm sm:text-base font-medium">
               Contraseña:
             </label>
             <input
               id="password"
               type="password"
               placeholder="123456B."
-              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
+               text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
               {...register('password', { required: true })}
             />
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="mb-1 block font-medium">
+            <label htmlFor="confirmPassword" className="mb-1 block text-sm sm:text-base font-medium">
               Repite la contraseña:
             </label>
             <input
               id="confirmPassword"
               type="password"
               placeholder="123456B."
-              className="w-full rounded-xl border-none bg-gray-100 px-4 py-3 shadow-inner focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
+               text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
               {...register('confirmPassword', { required: true })}
             />
           </div>
 
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-xs sm:text-sm">
             <input
               type="checkbox"
               {...register('termsAccepted', { required: true })}
@@ -143,18 +147,18 @@ export default function RegisterPage() {
             <span>Acepto la política de privacidad y cookies</span>
           </div>
           {errors.termsAccepted && (
-            <p className="text-red-600 text-sm mt-1">
+            <p className="text-red-600 text-xs sm:text-sm mt-1">
               Debes aceptar la política de privacidad.
             </p>
           )}
 
           {error && (
-            <span className="block text-sm font-medium text-red-600">{error}</span>
+            <span className="block text-xs sm:text-sm font-medium text-red-600">{error}</span>
           )}
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-emerald-500 py-3 text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full rounded-xl bg-emerald-500 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             Crear cuenta
           </button>

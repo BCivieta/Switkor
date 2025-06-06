@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { BoltIcon, ClockIcon, AdjustmentsVerticalIcon, ShareIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import MobileMenu from '../components/mobileMenu';
 
 
 export default function LandingPage() {
@@ -11,6 +12,7 @@ export default function LandingPage() {
     <main className="flex flex-col items-center text-gray-800">
       {/* Header */}
       <header className="w-full flex justify-between items-center px-6 py-4 bg-white shadow-md sticky top-0 z-10">
+         {/* Logo */}
         <div className="flex items-center gap-2">
            <Image
             src="/logoSinLetras.png"
@@ -21,13 +23,14 @@ export default function LandingPage() {
           />
           <span className="text-3xl font-bold text-[#1A3F4E]">Switkor</span>
         </div>
-        <nav className="hidden md:flex gap-6">
+        {/* Menú visible en desktop */}
+        <nav className="hidden lg:flex gap-6">
           <Link href="#">Inicio</Link>
           <Link href="#planes">Planes</Link>
           <Link href="#ejemplo">Ejemplo de sesión</Link>
           <Link href="#contacto">Contacto</Link>
         </nav>
-        <div className="flex gap-2">
+        <div className="hidden lg:flex gap-2">
           <Link
             href="/login"
             className="px-4 py-2 rounded-full border border-emerald-500 text-emerald-500 hover:bg-emerald-50"
@@ -35,11 +38,26 @@ export default function LandingPage() {
             Iniciar sesión
           </Link>
           <Link
-            href="/login"
+            href="/register"
             className="px-4 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-600"
           >
             Registrarse
           </Link>
+        </div>
+         {/* Menú hamburguesa en móvil */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <MobileMenu
+            links={[
+              { href: '#', label: 'Inicio' },
+              { href: '#planes', label: 'Planes' },
+              { href: '#ejemplo', label: 'Ejemplo de sesión' },
+              { href: '#contacto', label: 'Contacto' },
+            ]}
+            actions={[
+              { label: 'Iniciar sesión', href: '/login' },
+              { label: 'Registrarse', href: '/register', isPrimary: true },
+            ]}
+          />
         </div>
       </header>
 
