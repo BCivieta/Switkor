@@ -21,7 +21,7 @@ export default function LandingPage() {
             height={48}
             className="h-18 w-auto"
           />
-          <span className="text-3xl font-bold text-[#1A3F4E]">Switkor</span>
+          <span className=" text-2xl sm:text-3xl font-bold text-[#1A3F4E]">Switkor</span>
         </div>
         {/* Menú visible en desktop */}
         <nav className="hidden lg:flex gap-6">
@@ -81,7 +81,7 @@ export default function LandingPage() {
         <div className="mt-8 text-center">
           <Link
             href="/login"
-            className="bg-emerald-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-emerald-600"
+            className="bg-emerald-500 text-white px-8 py-3 rounded-full text-base sm:text-lg font-semibold hover:bg-emerald-600"
           >
             EMPIEZA GRATIS
           </Link>
@@ -91,27 +91,27 @@ export default function LandingPage() {
       {/* Beneficios cortos */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center px-4 mb-20">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Planes adaptados</h3>
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Planes adaptados</h3>
           <p>Entrenamientos según tu nivel y objetivos</p>
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-2">Automático y flexible</h3>
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Automático y flexible</h3>
           <p>Generación automática según disponibilidad</p>
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-2">Conecta y comparte</h3>
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Conecta y comparte</h3>
           <p>Comparte tus progresos con la comunidad</p>
         </div>
       </section>
 
       {/* Por qué elegir Switkor */}
       <section className="w-full max-w-4xl px-4 mb-20">
-        <h2 className="text-2xl font-bold text-center mb-10"> ¿Por qué elegir Switkor?</h2>
+        <h2 className=" text-xl sm:text-2xl font-bold text-center mb-10"> ¿Por qué elegir Switkor?</h2>
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <BoltIcon className="w-8 h-8 text-emerald-600" />
             <p>
-              <strong>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
+              <strong className='text-sm sm:text-base'>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
@@ -137,20 +137,20 @@ export default function LandingPage() {
 
       {/* Planes */}
       <section id="planes" className="w-full max-w-6xl px-4 mb-20">
-        <h2 className="text-2xl font-bold text-center mb-10">Nuestros planes</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">Nuestros planes</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
             <span className="absolute top-2 left-2 text-xs font-bold bg-green-100 text-emerald-800 px-2 py-1 rounded-full">
               Gratuito
             </span>
-            <h3 className="font-bold text-lg mb-4 mt-4">Plan Gratuito</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Gratuito</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
+              <li className="flex items-center text-sm sm:text-base gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
               <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso limitado a funciones</li>
               <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Registro gratuito</li>
             </ul>
             <p className="font-semibold mb-2">0 € / mes</p>
-            <Link href="/login" className="inline-block bg-green-100 text-emerald-700 font-medium px-4 py-2 rounded-full">
+            <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">
               Empieza gratis
             </Link>
           </div>
@@ -183,8 +183,8 @@ export default function LandingPage() {
               <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad privada</li>
             </ul>
             <p className="font-semibold mb-2">29,99 € / grupo</p>
-            <Link href="/login" className="inline-block bg-green-100 text-emerald-700 font-medium px-4 py-2 rounded-full">
-              Registrar mi equipo
+            <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">
+              Registrar mi grupo
             </Link>
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function LandingPage() {
 
       {/* Contacto */}
       <section id="contacto" className="w-full max-w-3xl px-4 mb-20">
-        <h2 className="text-2xl font-bold text-center mb-10">¿Tienes una duda, una propuesta o quieres colaborar?
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">¿Tienes una duda, una propuesta o quieres colaborar?
         </h2>
         <form className="space-y-4">
           <input
@@ -203,9 +203,9 @@ export default function LandingPage() {
           <input
             type="email"
             placeholder="Correo electrónico"
-            className="w-full rounded border px-4 py-2"
+            className="w-full rounded border px-3 sm:px-4 py-2"
           />
-          <select className="w-full rounded border px-4 py-2">
+          <select className="w-full rounded border px-3 sm:px-4 py-2">
             <option>General</option>
             <option>Duda sobre planes</option>
             <option>Propuesta de colaboración</option>
@@ -213,9 +213,9 @@ export default function LandingPage() {
           </select>
           <textarea
             placeholder="Escribe tu propuesta o duda..."
-            className="w-full rounded border px-4 py-2 min-h-[120px]"
+            className="w-full rounded border text-sm sm:text-base px-3 sm:px-4 py-2 min-h-[120px]"
           />
-          <button className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600">
+          <button className="bg-emerald-500 text-sm sm:text-base text-white px4 sm:px-6 py-2 rounded hover:bg-emerald-600">
             Enviar mensaje
           </button>
         </form>

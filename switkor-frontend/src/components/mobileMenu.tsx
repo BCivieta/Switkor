@@ -11,8 +11,8 @@ interface MenuItem {
 }
 
 interface MobileMenuProps {
-  links: MenuItem[];     // Rutas como Inicio, Planes, etc.
-  actions?: MenuItem[];  // Acciones como Login o Registro
+  links: MenuItem[];     
+  actions?: MenuItem[]; 
 }
 
 export default function MobileMenu({ links, actions = [] }: MobileMenuProps) {

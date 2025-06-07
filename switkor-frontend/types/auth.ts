@@ -6,6 +6,8 @@ export interface LoginDto {
 
 export interface RegisterDto extends LoginDto {
   name?: string;
+  confirmPassword: string;
+  termsAccepted: boolean;
 }
 
 // Respuesta de /auth/login

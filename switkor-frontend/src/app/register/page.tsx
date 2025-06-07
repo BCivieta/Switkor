@@ -9,14 +9,8 @@ import Image from 'next/image';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import type { RegisterDto } from 'types/auth';
 
-interface RegisterDto {
-  email: string;
-  name: string;
-  password: string;
-  confirmPassword: string;
-  termsAccepted: boolean;
-}
 
 export default function RegisterPage() {
   const {
