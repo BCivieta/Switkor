@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import type { RegisterDto } from 'types/auth';
+import type { RegisterDto } from '@/types/auth';
 
 
 export default function RegisterPage() {

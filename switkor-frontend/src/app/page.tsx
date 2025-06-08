@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { BoltIcon, ClockIcon, AdjustmentsVerticalIcon, ShareIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import MobileMenu from '../components/mobileMenu';
+import { Dumbbell, CalendarClock, Users } from "lucide-react";
 
 
 export default function LandingPage() {
@@ -91,16 +92,19 @@ export default function LandingPage() {
       {/* Beneficios cortos */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center px-4 mb-20">
         <div>
+          <Dumbbell className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
           <h3 className="text-base sm:text-lg font-semibold mb-2">Planes adaptados</h3>
-          <p>Entrenamientos según tu nivel y objetivos</p>
+          <p className="text-sm sm:text-base">Entrenamientos según tu nivel y objetivos</p>
         </div>
         <div>
+          <CalendarClock className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
           <h3 className="text-base sm:text-lg font-semibold mb-2">Automático y flexible</h3>
-          <p>Generación automática según disponibilidad</p>
+          <p className="text-sm sm:text-base">Generación automática según disponibilidad</p>
         </div>
         <div>
+          <Users className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
           <h3 className="text-base sm:text-lg font-semibold mb-2">Conecta y comparte</h3>
-          <p>Comparte tus progresos con la comunidad</p>
+          <p className="text-sm sm:text-base">Comparte tus progresos con la comunidad</p>
         </div>
       </section>
 
@@ -110,25 +114,25 @@ export default function LandingPage() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <BoltIcon className="w-8 h-8 text-emerald-600" />
-            <p>
-              <strong className='text-sm sm:text-base'>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
+            <p className="text-sm sm:text-base">
+              <strong>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <ClockIcon className="w-8 h-8 text-emerald-600" />
-            <p>
+            <p className="text-sm sm:text-base">
               <strong>Ahorra tiempo y esfuerzo</strong> en la planificación. Solo rellena tu perfil y listo.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <AdjustmentsVerticalIcon className="w-8 h-8 text-emerald-600" />
-            <p>
+            <p className="text-sm sm:text-base">
               <strong>Adáptate a tu carga semanal.</strong> Cada semana el sistema ajusta tu plan.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <ShareIcon className="w-8 h-8 text-emerald-600" />
-            <p>
+            <p className="text-sm sm:text-base">
               <strong>Comparte tu progreso</strong> con quien quieras.
             </p>
           </div>
@@ -145,9 +149,9 @@ export default function LandingPage() {
             </span>
             <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Gratuito</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center text-sm sm:text-base gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso limitado a funciones</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Registro gratuito</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso limitado a funciones</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Registro gratuito</li>
             </ul>
             <p className="font-semibold mb-2">0 € / mes</p>
             <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">
@@ -159,12 +163,12 @@ export default function LandingPage() {
             <span className="absolute top-2 left-2 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
               El más popular
             </span>
-            <h3 className="font-bold text-lg mb-4 mt-4">Plan Premium Individual</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Premium Individual</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Planes personalizados</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Estadísticas y seguimiento</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Integración con wearables</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad global</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Planes personalizados</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Estadísticas y seguimiento</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Integración con wearables</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad global</li>
             </ul>
             <p className="font-semibold mb-2">12,99 € / mes</p>
             <Link href="/login" className="inline-block bg-emerald-500 text-white font-medium px-4 py-2 rounded-full">
@@ -176,11 +180,11 @@ export default function LandingPage() {
             <span className="absolute top-2 left-2 text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
               Ideal para clubs
             </span>
-            <h3 className="font-bold text-lg mb-4 mt-4">Plan Compartido</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Compartido</h3>
             <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Entrenamiento coordinado</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso premium para miembros</li>
-              <li className="flex items-center gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad privada</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Entrenamiento coordinado</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso premium para miembros</li>
+              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad privada</li>
             </ul>
             <p className="font-semibold mb-2">29,99 € / grupo</p>
             <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">

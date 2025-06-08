@@ -9,8 +9,8 @@ import Image from 'next/image';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { AxiosError } from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { useAuthStore } from '../../../types/auth-store';
-import type { LoginDto, JwtPayload } from '../../../types/auth';
+import { useAuthStore } from '../../store/auth-store';
+import type { LoginDto, JwtPayload } from '../../types/auth';
 
 
 export default function LoginPage() {

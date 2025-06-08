@@ -2,8 +2,8 @@
 
 import { useEffect, ReactNode} from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useAuthStore } from '../../types/auth-store';
-import type { JwtPayload } from '../../types/auth';
+import { useAuthStore } from '../store/auth-store';
+import type { JwtPayload } from '../types/auth';
 
 interface Props {
   children: ReactNode;
