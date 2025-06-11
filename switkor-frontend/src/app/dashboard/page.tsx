@@ -10,8 +10,10 @@ import { api } from '@/lib/api';
 import CustomCalendar from '@/components/CustomCalendar';
 
 interface Session {
+  id: number;
   date: string;
   weekNumber: number;
+  focus:string;
 }
 
 interface Plan {
@@ -22,19 +24,24 @@ export default function DashboardPage() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const logout = useAuthStore((state) => state.logout);
-  const [sessionsByDate, setSessionsByDate] = useState<Record<string, string>>({});
+  const [sessionsByDate, setSessionsByDate] = useState<Record<string, { id: number; label: string; focus: string}>>({});
   const [nextSessionDate, setNextSessionDate] = useState<string | null>(null);
+  const [nextSessionId, setNextSessionId] = useState<number | null>(null);
+
 
   useEffect(() => {
     const fetchPlan = async () => {
       try {
         const res = await api.get<Plan>('/plan/current');
+        //debug
+        console.log('Respuesta del backend:', res.data);
+        //debug
         const plan = res.data;
 
-        const sessionsMap: Record<string, string> = {};
+        const sessionsMap: Record<string, { id: number; label: string; focus: string }> = {};
         plan.sessions?.forEach((session) => {
           const date = new Date(session.date).toISOString().split('T')[0];
-          sessionsMap[date] = `Semana ${session.weekNumber}`;
+          sessionsMap[date] = { id: session.id, label: `Semana ${session.weekNumber}`, focus: session.focus,};
         });
 
         setSessionsByDate(sessionsMap);
@@ -45,6 +52,7 @@ export default function DashboardPage() {
 
         if (futureSession) {
           setNextSessionDate(new Date(futureSession.date).toISOString().split('T')[0]);
+          setNextSessionId(futureSession.id);
         }
       } catch (err) {
         console.error('Error al cargar el plan:', err);
@@ -61,8 +69,9 @@ export default function DashboardPage() {
 
   const handleDayClick = (value: Date) => {
     const iso = value.toISOString().split('T')[0];
-    if (sessionsByDate[iso]) {
-      router.push('/dashboard/session');
+    const sessionInfo = sessionsByDate[iso];
+    if (sessionInfo) {
+    router.push(`/dashboard/session/${sessionInfo.id}`);
     }
   };
 
@@ -104,10 +113,10 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {nextSessionDate && (
+      {nextSessionDate &&  nextSessionId &&(
         <div className="text-center mt-6">
           <button
-            onClick={() => router.push('/dashboard/session')}
+            onClick={() => router.push(`/dashboard/session/${nextSessionId}`)}
             className="bg-emerald-500 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-emerald-600"
           >
             Ir a mi próxima sesión ⚡

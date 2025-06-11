@@ -143,7 +143,9 @@ export class TrainingPlanService {
         }
       }
     }
-
+    //debug
+    console.log("el plan",plan)
+    //debug
     return plan;
   }
 
@@ -241,7 +243,7 @@ export class TrainingPlanService {
     // Calentamiento
     const warmups = allExercises.filter((e) => e.pattern === 'warmup');
     selected.push(
-      ...this.pickExercises(warmups, 2, 2, '10-12', ExerciseBlock.WARMUP),
+      ...this.pickExercises(warmups, 4, 2, '10-12', ExerciseBlock.WARMUP),
     );
 
     // Ejercicios principales según los patrones del día y objetivo
@@ -352,14 +354,13 @@ export class TrainingPlanService {
     return this.planRepo.findOne({
       where: {
         user: { id: user.id },
-        endDate: MoreThanOrEqual(new Date()),
       },
       relations: [
         'sessions',
         'sessions.exercises',
         'sessions.exercises.exercise',
       ], // si quieres incluir sesiones
-      order: { startDate: 'DESC' },
+      order: { id: 'DESC' },
     });
   }
   //Devuelve todos los planes del uaurio

@@ -5,7 +5,7 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 
 interface CustomCalendarProps {
-  sessionsByDate: Record<string, string>;
+  sessionsByDate: Record<string,  { id: number; label: string; focus: string}>;
   onClickDay: (value: Date) => void;
 }
 
@@ -16,7 +16,7 @@ export default function CustomCalendar({ sessionsByDate, onClickDay }: CustomCal
       return (
         <div
           data-tooltip-id="session-tooltip"
-          data-tooltip-content={sessionsByDate[iso]}
+          data-tooltip-content={sessionsByDate[iso]?.focus}
           className="text-lg text-emerald-700"
         >
           🏋️‍♀️
