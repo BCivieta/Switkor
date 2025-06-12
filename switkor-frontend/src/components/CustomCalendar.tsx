@@ -3,45 +3,66 @@
 import Calendar from 'react-calendar';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import { patternTranslations } from '@/lib/patternTranslations';
 
 interface CustomCalendarProps {
-  sessionsByDate: Record<string,  { id: number; label: string; focus: string}>;
+  sessionsByDate: Record<string,  { id: number; label: string; focus: string; sessionType: string }>;
   onClickDay: (value: Date) => void;
 }
 
 export default function CustomCalendar({ sessionsByDate, onClickDay }: CustomCalendarProps) {
+
+  const formatDateKey = (date: Date) => date.toLocaleDateString('sv-SE');
+
+
   const tileContent = ({ date }: { date: Date }) => {
-    const iso = date.toISOString().split('T')[0];
-    if (sessionsByDate[iso]) {
+    const iso = formatDateKey(date);
+    const session = sessionsByDate[iso];
+    if (session) {
+      const translatedFocus = session.focus
+        .split(',')
+        .map((key) => patternTranslations[key.trim()] || key)
+        .join(' / ');
+
+        const emoji = session.sessionType === 'recovery' ? '🧘' : '🏋️';
+
       return (
         <div
           data-tooltip-id="session-tooltip"
-          data-tooltip-content={sessionsByDate[iso]?.focus}
+          data-tooltip-content={translatedFocus}
           className="text-lg text-emerald-700"
         >
-          🏋️‍♀️
+          {emoji}
         </div>
       );
     }
     return null;
   };
 
+  const tileClassName = ({ date }: { date: Date }) => {
+  const iso = formatDateKey(date);
+  const session = sessionsByDate[iso];
+
+  //debug
+   if (session) {
+    console.log(iso, session.sessionType); // 👈 esto te dirá qué valores están llegando
+  }
+  //debug
+  if (!session) return null;
+
+  if (session.sessionType === 'recovery') return ['tile-recovery'];
+  return ['tile-main'];; // todo lo que no sea recovery se considera sesión normal
+  };
   return (
     <div className="w-full max-w-3xl mx-auto">
       <Calendar
         onClickDay={onClickDay}
         tileContent={tileContent}
+        tileClassName={tileClassName}
+        
         className="
           !border-none
           p-4 rounded-3xl shadow-md bg-white
-          [&_.react-calendar__navigation]:mb-4
-          [&_.react-calendar__navigation__label]:text-lg
-          [&_.react-calendar__navigation__arrow]:text-xl
-          [&_.react-calendar__month-view__weekdays]:text-sky-900 [&_.react-calendar__month-view__weekdays]:text-sm [&_.react-calendar__month-view__weekdays]:font-medium
-          [&_.react-calendar__month-view__days]:grid [&_.react-calendar__month-view__days]:grid-cols-7
-          [&_.react-calendar__tile]:aspect-square [&_.react-calendar__tile]:rounded-xl [&_.react-calendar__tile]:text-sm [&_.react-calendar__tile]:p-2
-          [&_.react-calendar__tile--now]:bg-sky-100 [&_.react-calendar__tile--now]:font-semibold [&_.react-calendar__tile--now]:ring-2 [&_.react-calendar__tile--now]:ring-emerald-300
-          [&_.react-calendar__tile--active]:bg-emerald-500 [&_.react-calendar__tile--active]:text-white
         "
       />
       <Tooltip id="session-tooltip" />

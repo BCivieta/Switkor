@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { TrainingSession } from './training-session.entity';
 import { Exercise } from '../exercise/exercise.entity';
+import { ExerciseBlock } from '../common/enums/exercise-block.enum';
 
 @Entity()
 export class TrainingExercise {
@@ -33,12 +34,4 @@ export class TrainingExercise {
 
   @Column({ type: 'text' })
   block: ExerciseBlock;
-}
-export enum ExerciseBlock {
-  WARMUP = 'warmup',
-  MAIN = 'main',
-  CORE = 'core',
-  ACCESSORY = 'accessory',
-  GLOBAL = 'global',
-  HIIT = 'hiit',
 }

@@ -9,6 +9,7 @@ import { Exercise } from '../exercise/exercise.entity';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { User } from '../user/user.entity';
 import { addDays, startOfWeek, isMonday, addWeeks } from 'date-fns';
+import { ExerciseBlock } from '../common/enums/exercise-block.enum';
 
 @Injectable()
 export class TrainingPlanService {
@@ -88,7 +89,7 @@ export class TrainingPlanService {
           trainingPlan: plan,
           date: sessionDate,
           weekNumber: week,
-          dayOfWeek: sessionDate.toLocaleDateString('en-US', {
+          dayOfWeek: sessionDate.toLocaleDateString('es-ES', {
             weekday: 'long',
           }),
           dayNumber: dayIndex + 1,
@@ -98,6 +99,25 @@ export class TrainingPlanService {
         });
 
         await this.sessionRepo.save(session);
+
+        if (session.sessionType === 'recovery') {
+          const recoveryExercises = await this.baseExerciseRepo.find({
+            where: { category: 'recovery' },
+          });
+
+          for (let i = 0; i < recoveryExercises.length; i++) {
+            const ex = this.exerciseRepo.create({
+              session,
+              exercise: recoveryExercises[i],
+              sets: 1,
+              reps: '60 segundos',
+              order: i + 1,
+              block: ExerciseBlock.RECOVERY,
+            });
+            await this.exerciseRepo.save(ex);
+          }
+          continue; // para saltar el resto del bucle
+        }
 
         if (session.sessionType === 'main') {
           let exercises;
@@ -120,8 +140,6 @@ export class TrainingPlanService {
               sex,
               goal,
               session.focus,
-              week,
-              dayIndex + 1,
             );
             if (week === 1) {
               // Guardamos los ejercicios generados de la semana 1 para este día
@@ -144,7 +162,7 @@ export class TrainingPlanService {
       }
     }
     //debug
-    console.log("el plan",plan)
+    console.log('el plan', plan);
     //debug
     return plan;
   }
@@ -156,8 +174,15 @@ export class TrainingPlanService {
     const map3 = [
       ['horizontal_push', 'horizontal_pull', 'knee_dominant'],
       ['vertical_push', 'vertical_pull', 'hip_dominant'],
-      ['horizontal_push', 'horizontal_pull', 'vertical_push', 'vertical_pull', 'knee_dominant', 'hip_dominant'],
-    ]
+      [
+        'horizontal_push',
+        'horizontal_pull',
+        'vertical_push',
+        'vertical_pull',
+        'knee_dominant',
+        'hip_dominant',
+      ],
+    ];
     const map4 = [
       ['horizontal_push', 'horizontal_pull', 'knee_dominant'],
       ['vertical_push', 'vertical_pull', 'hip_dominant'],
@@ -197,8 +222,6 @@ export class TrainingPlanService {
     sex: string,
     goal: string,
     focus: string,
-    week: number,
-    day: number,
   ): Promise<
     { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
   > {
@@ -211,9 +234,7 @@ export class TrainingPlanService {
     }[] = [];
 
     // Extrae los patrones principales de la sesión
-    const focusPatterns = focus
-      .split(',')
-      .map((f) => f.trim());
+    const focusPatterns = focus.split(',').map((f) => f.trim());
 
     //Establecer número de series base según nivel y objetivo
     const isFemale = sex === 'female';
@@ -233,14 +254,14 @@ export class TrainingPlanService {
 
     if (level === 'advanced') globalSets = 4;
 
-    if (isFemale) {
+    if (isFemale && level !== 'advanced') {
       mainSets++;
       accessorySets++;
       globalSets++;
     }
 
     const mainReps =
-    goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
+      goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
 
     //BLOQUE 1 Calentamiento
     const warmups = allExercises.filter((e) => e.pattern === 'warmup');
@@ -250,27 +271,34 @@ export class TrainingPlanService {
 
     // BLOQUE 2: Principal (main_basic + main_complementary + core)
     // Ejercicios principales según los patrones del día y objetivo
-   
+
     for (const pattern of focusPatterns) {
       const main = allExercises.filter(
         (e) => e.pattern === pattern && e.category?.includes('main_basic'),
       );
 
-      const count = level === 'intermediate' ? 2 : 1;
       selected.push(
         ...this.pickExercises(main, 1, mainSets, mainReps, ExerciseBlock.MAIN),
       );
+    }
 
     // main_complementary solo si nivel avanzado
     if (level === 'advanced') {
-      const complementary = allExercises.filter(
-        e => e.pattern === pattern && e.category === 'main_complementary',
+      const complementaryCandidates = allExercises.filter(
+        (e) =>
+          focusPatterns.includes(e.pattern) &&
+          e.category === 'main_complementary',
       );
       selected.push(
-        ...this.pickExercises(complementary, 1, mainSets, mainReps, ExerciseBlock.MAIN),
+        ...this.pickExercises(
+          complementaryCandidates,
+          1,
+          mainSets,
+          mainReps,
+          ExerciseBlock.MAIN,
+        ),
       );
     }
-  }
 
     //Core, se aplica siempre. Dividido entre anti-extension y rotación (1 y 1)
     const coreAntiExtension = allExercises.filter((e) =>
@@ -307,66 +335,67 @@ export class TrainingPlanService {
         ),
       );
     }
-    // Ejercicios main_complementary según el nivel (intermedios: 2, avanzados: 3)
-    /*const complementary = allExercises.filter(
-      (e) => e.category === 'main_complementary',
+
+    //BLOQUE 4: Complementario (accessory) + hiit si es salud
+    const accessory = allExercises.filter((e) => e.category === 'accessory');
+
+    const legPatterns = ['isolation_leg_push', 'isolation_leg_pull'];
+    const armPatterns = ['isolation_arm_push', 'isolation_arm_pull'];
+
+    const accessoryLeg = accessory.filter((e) =>
+      legPatterns.includes(e.pattern),
     );
-    const pushPatterns = [
-      'horizontal_push',
-      'vertical_push',
-      'isolation_arm_push',
-    ];
-    const pullPatterns = [
-      'horizontal_pull',
-      'vertical_pull',
-      'isolation_arm_pull',
-    ];
-    const complementaryFiltered = complementary.filter((e) => {
-      if (day % 2 === 0) {
-        return pullPatterns.includes(e.pattern);
-      } else {
-        return pushPatterns.includes(e.pattern);
-      }
-    });
-    const complementaryCount =
-      level === 'advanced' ? 2 : level === 'intermediate' ? 2 : 1;
-    if (complementaryCount > 0) {
+    const accessoryArm = accessory.filter((e) =>
+      armPatterns.includes(e.pattern),
+    );
+
+    // Elegimos 1 pierna, 2 brazos (si no beginner)
+    if (level !== 'beginner') {
       selected.push(
         ...this.pickExercises(
-          complementaryFiltered,
-          complementaryCount,
-          mainSets,
+          accessoryLeg,
+          1,
+          accessorySets,
           mainReps,
           ExerciseBlock.ACCESSORY,
         ),
       );
-    }*/
-
-  //BLOQUE 4: Complementario (accessory) + hiit si es salud
-  const accessory = allExercises.filter((e) => e.category === 'accessory');
-
-  const legPatterns = ['isolation_leg_push', 'isolation_leg_pull'];
-  const armPatterns = ['isolation_arm_push', 'isolation_arm_pull'];
-
-  const accessoryLeg = accessory.filter((e) => legPatterns.includes(e.pattern));
-  const accessoryArm = accessory.filter((e) => armPatterns.includes(e.pattern));
-
-  // Elegimos 1 pierna, 2 brazos (si no beginner)
-  if (level !== 'beginner') {
-    selected.push(
-      ...this.pickExercises(accessoryLeg, 1, accessorySets, mainReps, ExerciseBlock.ACCESSORY),
-    );
-    selected.push(
-      ...this.pickExercises(accessoryArm, 2, accessorySets, mainReps, ExerciseBlock.ACCESSORY),
-    );
-  }
-  // HIIT solo si objetivo es salud
-  if (goal === 'health') {
-    const hiit = accessory.filter((e) => e.pattern === 'hiit');
-    selected.push(
-      ...this.pickExercises(hiit, 1, 3, '20s-40s', ExerciseBlock.ACCESSORY),
-    );
-  }
+      selected.push(
+        ...this.pickExercises(
+          accessoryArm,
+          1,
+          accessorySets,
+          mainReps,
+          ExerciseBlock.ACCESSORY,
+        ),
+      );
+    } else {
+      selected.push(
+        ...this.pickExercises(
+          accessoryLeg,
+          1,
+          2,
+          mainReps,
+          ExerciseBlock.ACCESSORY,
+        ),
+      );
+      selected.push(
+        ...this.pickExercises(
+          accessoryArm,
+          1,
+          2,
+          mainReps,
+          ExerciseBlock.ACCESSORY,
+        ),
+      );
+    }
+    // HIIT solo si objetivo es salud
+    if (goal === 'health') {
+      const hiit = accessory.filter((e) => e.pattern === 'hiit');
+      selected.push(
+        ...this.pickExercises(hiit, 1, 3, '20s-40s', ExerciseBlock.ACCESSORY),
+      );
+    }
 
     return selected;
   }
@@ -396,12 +425,4 @@ export class TrainingPlanService {
       ],
     });
   }
-}
-export enum ExerciseBlock {
-  WARMUP = 'warmup',
-  MAIN = 'main',
-  CORE = 'core',
-  ACCESSORY = 'accessory',
-  GLOBAL = 'global',
-  HIIT = 'hiit',
 }

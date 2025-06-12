@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth-store';
 
 interface MenuItem {
   label: string;
@@ -17,6 +19,18 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ links, actions = [] }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleActionClick = (label: string, href: string) => {
+    setOpen(false);
+    if (label === 'Cerrar sesión') {
+      logout();
+      router.push('/login');
+    } else {
+      router.push(href);
+    }
+  };
 
   return (
     <div className="lg:hidden relative z-20">
@@ -47,18 +61,17 @@ export default function MobileMenu({ links, actions = [] }: MobileMenuProps) {
           {actions.length > 0 && <hr className="border-gray-200" />}
 
           {actions.map((action) => (
-            <Link
-              key={action.href}
-              href={action.href}
-              onClick={() => setOpen(false)}
-              className={`block text-center font-medium px-4 py-2 rounded-md ${
+            <button
+              key={action.label}
+              onClick={() => handleActionClick(action.label, action.href)}
+              className={`w-full text-left font-medium px-4 py-2 rounded-md ${
                 action.isPrimary
                   ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                   : 'text-emerald-600 hover:text-emerald-800'
               }`}
             >
               {action.label}
-            </Link>
+            </button>
           ))}
         </div>
       )}
