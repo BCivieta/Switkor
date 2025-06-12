@@ -92,7 +92,7 @@ export class TrainingPlanService {
             weekday: 'long',
           }),
           dayNumber: dayIndex + 1,
-          focus: this.getFocusForDay(dayIndex + 1, daysPerWeek),
+          focus: this.getFocusForDay(dayIndex + 1, daysPerWeek).join(','),
           sessionType:
             daysPerWeek === 5 && dayIndex === 4 ? 'recovery' : 'main',
         });
@@ -152,19 +152,19 @@ export class TrainingPlanService {
   /*
   Devuelve el foco principal de cada sesión dependiendo del día y frecuencia semanal
    */
-  getFocusForDay(day: number, daysPerWeek: number): string {
+  getFocusForDay(day: number, daysPerWeek: number): string[] {
     const map3 = [
-      'Horizontal push/pull + Knee dominant',
-      'Vertical push/pull + Hip dominant',
-      'Full body + Core',
-    ];
+      ['horizontal_push', 'horizontal_pull', 'knee_dominant'],
+      ['vertical_push', 'vertical_pull', 'hip_dominant'],
+      ['horizontal_push', 'horizontal_pull', 'vertical_push', 'vertical_pull', 'knee_dominant', 'hip_dominant'],
+    ]
     const map4 = [
-      'Horizontal push/pull + Knee dominant',
-      'Vertical push/pull + Hip dominant',
-      'Horizontal push/pull + Knee dominant',
-      'Vertical push/pull + Hip dominant',
+      ['horizontal_push', 'horizontal_pull', 'knee_dominant'],
+      ['vertical_push', 'vertical_pull', 'hip_dominant'],
+      ['horizontal_push', 'horizontal_pull', 'knee_dominant'],
+      ['vertical_push', 'vertical_pull', 'hip_dominant'],
     ];
-    const map5 = [...map4, 'Recovery'];
+    const map5 = [...map4, ['Recovery']];
 
     if (daysPerWeek === 3) return map3[day - 1];
     if (daysPerWeek === 4) return map4[day - 1];
@@ -212,8 +212,7 @@ export class TrainingPlanService {
 
     // Extrae los patrones principales de la sesión
     const focusPatterns = focus
-      .toLowerCase()
-      .split('+')
+      .split(',')
       .map((f) => f.trim());
 
     //Establecer número de series base según nivel y objetivo
@@ -240,23 +239,38 @@ export class TrainingPlanService {
       globalSets++;
     }
 
-    // Calentamiento
+    const mainReps =
+    goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
+
+    //BLOQUE 1 Calentamiento
     const warmups = allExercises.filter((e) => e.pattern === 'warmup');
     selected.push(
       ...this.pickExercises(warmups, 4, 2, '10-12', ExerciseBlock.WARMUP),
     );
 
+    // BLOQUE 2: Principal (main_basic + main_complementary + core)
     // Ejercicios principales según los patrones del día y objetivo
-    const mainReps =
-      goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
+   
     for (const pattern of focusPatterns) {
       const main = allExercises.filter(
         (e) => e.pattern === pattern && e.category?.includes('main_basic'),
       );
+
+      const count = level === 'intermediate' ? 2 : 1;
       selected.push(
-        ...this.pickExercises(main, 2, mainSets, mainReps, ExerciseBlock.MAIN),
+        ...this.pickExercises(main, 1, mainSets, mainReps, ExerciseBlock.MAIN),
+      );
+
+    // main_complementary solo si nivel avanzado
+    if (level === 'advanced') {
+      const complementary = allExercises.filter(
+        e => e.pattern === pattern && e.category === 'main_complementary',
+      );
+      selected.push(
+        ...this.pickExercises(complementary, 1, mainSets, mainReps, ExerciseBlock.MAIN),
       );
     }
+  }
 
     //Core, se aplica siempre. Dividido entre anti-extension y rotación (1 y 1)
     const coreAntiExtension = allExercises.filter((e) =>
@@ -273,22 +287,14 @@ export class TrainingPlanService {
         1,
         2,
         '8-12',
-        ExerciseBlock.CORE,
+        ExerciseBlock.MAIN,
       ),
     );
     selected.push(
-      ...this.pickExercises(coreRotation, 1, 2, '8-12', ExerciseBlock.CORE),
+      ...this.pickExercises(coreRotation, 1, 2, '8-12', ExerciseBlock.MAIN),
     );
 
-    // Cardio/HIIT solo para objetivo de salud
-    if (goal === 'health') {
-      const hiit = allExercises.filter((e) => e.pattern === 'hiit');
-      selected.push(
-        ...this.pickExercises(hiit, 1, 3, '20s-40s', ExerciseBlock.HIIT),
-      );
-    }
-
-    // Global solo si es nivel avanzado
+    // BLOQUE 3: Global solo avanzado
     if (level === 'advanced') {
       const global = allExercises.filter((e) => e.pattern === 'global');
       selected.push(
@@ -302,7 +308,7 @@ export class TrainingPlanService {
       );
     }
     // Ejercicios main_complementary según el nivel (intermedios: 2, avanzados: 3)
-    const complementary = allExercises.filter(
+    /*const complementary = allExercises.filter(
       (e) => e.category === 'main_complementary',
     );
     const pushPatterns = [
@@ -323,7 +329,7 @@ export class TrainingPlanService {
       }
     });
     const complementaryCount =
-      level === 'advanced' ? 3 : level === 'intermediate' ? 2 : 0;
+      level === 'advanced' ? 2 : level === 'intermediate' ? 2 : 1;
     if (complementaryCount > 0) {
       selected.push(
         ...this.pickExercises(
@@ -334,18 +340,33 @@ export class TrainingPlanService {
           ExerciseBlock.ACCESSORY,
         ),
       );
-    }
-    // Accesorios para todos salvo principiantes
-    const accessory = allExercises.filter((e) => e.category === 'accessory');
+    }*/
+
+  //BLOQUE 4: Complementario (accessory) + hiit si es salud
+  const accessory = allExercises.filter((e) => e.category === 'accessory');
+
+  const legPatterns = ['isolation_leg_push', 'isolation_leg_pull'];
+  const armPatterns = ['isolation_arm_push', 'isolation_arm_pull'];
+
+  const accessoryLeg = accessory.filter((e) => legPatterns.includes(e.pattern));
+  const accessoryArm = accessory.filter((e) => armPatterns.includes(e.pattern));
+
+  // Elegimos 1 pierna, 2 brazos (si no beginner)
+  if (level !== 'beginner') {
     selected.push(
-      ...this.pickExercises(
-        accessory,
-        1,
-        accessorySets,
-        mainReps,
-        ExerciseBlock.ACCESSORY,
-      ),
+      ...this.pickExercises(accessoryLeg, 1, accessorySets, mainReps, ExerciseBlock.ACCESSORY),
     );
+    selected.push(
+      ...this.pickExercises(accessoryArm, 2, accessorySets, mainReps, ExerciseBlock.ACCESSORY),
+    );
+  }
+  // HIIT solo si objetivo es salud
+  if (goal === 'health') {
+    const hiit = accessory.filter((e) => e.pattern === 'hiit');
+    selected.push(
+      ...this.pickExercises(hiit, 1, 3, '20s-40s', ExerciseBlock.ACCESSORY),
+    );
+  }
 
     return selected;
   }
