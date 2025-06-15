@@ -92,49 +92,52 @@ export default function SessionPage() {
         </p>
       </header>
       {/* Contenido */}
-      <main className="px-2 py-6 sm:px-6 w-full flex flex-col items-center">
-        <div className="w-full max-w-[95%] sm:max-w-4xl">
+      <main className="py-6 w-full flex flex-col items-center">
+        <div className="w-full sm:max-w-4xl sm:px1">
           <h1 className="text-lg sm:text-2xl font-bold text-center text-sky-900 mb-4 sm:mb-6">
             {session.dayOfWeek} - {new Date(session.date).toLocaleDateString()}
           </h1>
-          {/* Etiquetas */}
-          <div className="flex justify-center gap-2 mb-4 sm:mb-6 flex-wrap">
-            <span className="px-3 py-1 bg-rose-100 text-rose-600 font-medium rounded-full text-xs sm:text-sm">
-              {goalTranslations[session.trainingPlan.goal] || session.trainingPlan.goal}
-            </span>
-            <span className="px-3 py-1 bg-indigo-100 text-indigo-600 font-medium rounded-full text-xs sm:text-sm">
-              {session.focus
-                .split(",")
-                .map((key) => patternTranslations[key.trim()] || key)
-                .join(" / ")}
-            </span>
-          </div>
-          {/* Bloques de ejercicios */}
-          <div className="space-y-6 sm:space-y-8 m-0">
-            {Object.entries(groupedExercises).map(([block, exercises]) => (
-              <div
-                key={block}
-                className="bg-emerald-50 border border-emerald-100 rounded-2xl sm:rounded-3xl shadow p-4 sm:p-8"
-              >
-                <h2 className=" text-base sm:text-lg font-semibold text-emerald-800 mb-3 sm:mb-4">
-                  {blockTitles[block] || block}
-                </h2>
-                <ul className="space-y-1 sm:space-y-2">
-                  {exercises.map((ex, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center text-responsive"
-                    >
-                      <span>🔹{ex.exercise.name}</span>
-                      <span className="font-medium">
-                        {ex.sets}x{ex.reps}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+          {/* Card gris*/}
+          <div className=" bg-gray-50 rounded-3xl p-4 sm:p-6 shadow-inner px-1 sm:px-6">
+              {/* Etiquetas */}
+              <div className="flex justify-center gap-2 mb-4 sm:mb-6 flex-wrap">
+                <span className="px-3 py-1 bg-rose-100 text-rose-600 font-medium rounded-full text-xs sm:text-sm">
+                  {goalTranslations[session.trainingPlan.goal] || session.trainingPlan.goal}
+                </span>
+                <span className="px-3 py-1 bg-indigo-100 text-indigo-600 font-medium rounded-full text-xs sm:text-sm">
+                  {session.focus
+                    .split(",")
+                    .map((key) => patternTranslations[key.trim()] || key)
+                    .join(" / ")}
+                </span>
               </div>
-            ))}
-          </div>
+              {/* Bloques de ejercicios */}
+              <div className="space-y-6 sm:space-y-8 m-0">
+                {Object.entries(groupedExercises).map(([block, exercises]) => (
+                  <div
+                    key={block}
+                    className="bg-emerald-50 border border-emerald-100 rounded-2xl sm:rounded-3xl shadow p-4 sm:p-8"
+                  >
+                    <h2 className=" text-base sm:text-lg font-semibold text-emerald-800 mb-3 sm:mb-4">
+                      {blockTitles[block] || block}
+                    </h2>
+                    <ul className="space-y-1 sm:space-y-2">
+                      {exercises.map((ex, index) => (
+                        <li
+                          key={index}
+                          className="flex justify-between items-center text-responsive"
+                        >
+                          <span>🔹{ex.exercise.name}</span>
+                          <span className="font-medium">
+                            {ex.sets}x{ex.reps}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
         </div>
       </main>
     </div>

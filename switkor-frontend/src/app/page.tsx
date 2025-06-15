@@ -6,6 +6,8 @@ import { BoltIcon, ClockIcon, AdjustmentsVerticalIcon, ShareIcon, CheckCircleIco
 import Image from 'next/image';
 import MobileMenu from '../components/mobileMenu';
 import { Dumbbell, CalendarClock, Users } from "lucide-react";
+import ContactForm from '../components/ContactForm';
+
 
 
 export default function LandingPage() {
@@ -40,7 +42,7 @@ export default function LandingPage() {
           </Link>
           <Link
             href="/register"
-            className="px-4 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-600"
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 text-white hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200"
           >
             Registrarse
           </Link>
@@ -82,7 +84,7 @@ export default function LandingPage() {
         <div className="mt-8 text-center">
           <Link
             href="/login"
-            className="bg-emerald-500 text-white px-8 py-3 rounded-full text-base sm:text-lg font-semibold hover:bg-emerald-600"
+            className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-8 py-3 rounded-full text-base sm:text-lg font-semibold hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200"
           >
             EMPIEZA GRATIS
           </Link>
@@ -171,7 +173,7 @@ export default function LandingPage() {
               <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad global</li>
             </ul>
             <p className="font-semibold mb-2">12,99 € / mes</p>
-            <Link href="/login" className="inline-block bg-emerald-500 text-white font-medium px-4 py-2 rounded-full">
+            <Link href="/login" className="inline-block bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-medium px-4 py-2 rounded-full hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200">
               Quiero ser premium
             </Link>
           </div>
@@ -196,33 +198,8 @@ export default function LandingPage() {
 
       {/* Contacto */}
       <section id="contacto" className="w-full max-w-3xl px-4 mb-20">
-        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">¿Tienes una duda, una propuesta o quieres colaborar?
-        </h2>
-        <form className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nombre"
-            className="w-full rounded border px-4 py-2"
-          />
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            className="w-full rounded border px-3 sm:px-4 py-2"
-          />
-          <select className="w-full rounded border px-3 sm:px-4 py-2">
-            <option>General</option>
-            <option>Duda sobre planes</option>
-            <option>Propuesta de colaboración</option>
-            <option>Empresas o clubes</option>
-          </select>
-          <textarea
-            placeholder="Escribe tu propuesta o duda..."
-            className="w-full rounded border text-sm sm:text-base px-3 sm:px-4 py-2 min-h-[120px]"
-          />
-          <button className="bg-emerald-500 text-sm sm:text-base text-white px4 sm:px-6 py-2 rounded hover:bg-emerald-600">
-            Enviar mensaje
-          </button>
-        </form>
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">¿Tienes una duda, una propuesta o quieres colaborar?</h2>
+            <ContactForm />
       </section>
 
       {/* Footer */}

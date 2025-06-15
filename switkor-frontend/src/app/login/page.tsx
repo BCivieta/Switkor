@@ -47,7 +47,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-white">
+    <div className="flex min-h-screen flex-col justify-between bg-white mx-0">
       {/* ---------- Barra superior ---------- */}
       <header className="flex items-center px-6 pt-6">
         <Link
@@ -60,7 +60,7 @@ export default function LoginPage() {
       </header>
 
       {/* ---------- Contenido principal ---------- */}
-      <main className="mx-auto w-full max-w-lg flex-1 px-6">
+      <main className="mx-auto w-full max-w-lg flex-1 px-1">
         {/* Logo */}
         <div className="flex justify-center">
           <Image
@@ -105,7 +105,7 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              placeholder="123456B."
+              placeholder="Tu contraseña"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500 
               placeholder:text-xs sm:placeholder:text-sm  text-sm sm:text-base "
               {...register('password', { required: true })}
@@ -130,7 +130,7 @@ export default function LoginPage() {
           {/* Botón entrar */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-emerald-500 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             Entrar
           </button>

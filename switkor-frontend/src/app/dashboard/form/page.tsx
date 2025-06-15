@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/store/auth-store';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import CustomSelect from '@/components/CustomSelect';
+
 
 const planSchema = z.object({
   sex: z.enum(['male', 'female'], { required_error: 'Elige un sexo' }),
@@ -22,10 +24,12 @@ type PlanFormData = z.infer<typeof planSchema>;
 export default function CreatePlanPage() {
   const token = useAuthStore((state) => state.token);
   const [error, setError] = useState('');
+  const [selectedDays, setSelectedDays] = useState<PlanFormData['daysPerWeek'] | null>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<PlanFormData>({
     resolver: zodResolver(planSchema),
@@ -128,18 +132,17 @@ export default function CreatePlanPage() {
 
           {/* Días por semana */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Días por semana:</label>
-            <select
-              className="w-full rounded-xl bg-gray-100 p-2 shadow-inner focus:ring-2 focus:ring-sky-500"
-              {...register('daysPerWeek')}
-              defaultValue=""
-            >
-              <option value="" disabled>Selecciona días</option>
-              <option value="3">3 días</option>
-              <option value="4">4 días</option>
-              <option value="5">5 días</option>
-            </select>
-            {errors.daysPerWeek && <p className="text-sm text-red-600">{errors.daysPerWeek.message}</p>}
+            <CustomSelect
+                label="Días por semana"
+                options={['3', '4', '5']}
+                selected={selectedDays}
+                onSelect={(val) => {
+                  setSelectedDays(val as PlanFormData['daysPerWeek']);
+                  setValue('daysPerWeek', val as PlanFormData['daysPerWeek']);
+                }}
+                error={errors.daysPerWeek?.message}
+            />
+
           </div>
 
           {/* Mensajes de error */}
@@ -148,7 +151,7 @@ export default function CreatePlanPage() {
           {/* Botón */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-emerald-500 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             Crear Plan
           </button>

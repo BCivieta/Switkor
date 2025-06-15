@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import type { AxiosError } from 'axios';
-import toast from 'react-hot-toast';
-import type { RegisterDto } from '@/types/auth';
-
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import type { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import type { RegisterDto } from "@/types/auth";
 
 export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterDto>();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const onSubmit = async (data: RegisterDto) => {
     if (data.password !== data.confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError("Las contraseñas no coinciden");
       return;
     }
 
@@ -33,11 +33,11 @@ export default function RegisterPage() {
         name: data.name,
         password: data.password,
       });
-      toast.success('¡Registro exitoso! Ahora puedes iniciar sesión');
-      router.push('/login');
+      toast.success("¡Registro exitoso! Ahora puedes iniciar sesión");
+      router.push("/login");
     } catch (err) {
       const axiosErr = err as AxiosError<{ message: string }>;
-      setError(axiosErr.response?.data?.message ?? 'Error inesperado');
+      setError(axiosErr.response?.data?.message ?? "Error inesperado");
     }
   };
 
@@ -55,7 +55,7 @@ export default function RegisterPage() {
       </header>
 
       {/* ---------- Contenido principal ---------- */}
-      <main className="mx-auto w-full max-w-lg flex-1 px-6">
+      <main className="mx-auto w-full max-w-lg flex-1 px-1">
         <div className="flex justify-center">
           <Image
             src="/LogoSinFondo.png"
@@ -74,10 +74,15 @@ export default function RegisterPage() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-lg"
         >
-          <h2 className="text-lg sm:text-2xl font-bold text-sky-900">Registrarse</h2>
+          <h2 className="text-lg sm:text-2xl font-bold text-sky-900">
+            Registrarse
+          </h2>
 
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Correo electrónico:
             </label>
             <input
@@ -86,56 +91,97 @@ export default function RegisterPage() {
               placeholder="nombre@mail.com"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500 
               text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
-              {...register('email', { required: true })}
+              {...register("email", {
+                required: "El correo electrónico es obligatorio",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Introduce un correo electrónico válido",
+                },
+              })}
             />
+            {errors.email && (
+              <p className="text-red-600 text-xs sm:text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="name" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="name"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Nombre de usuario:
             </label>
             <input
               id="name"
               type="text"
-              placeholder="Blanca"
+              placeholder="Nombre"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
                text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
-              {...register('name', { required: true })}
+              {...register("name", { required: true })}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Contraseña:
             </label>
             <input
               id="password"
               type="password"
-              placeholder="123456B."
+              placeholder="Escribe tu contraseña segura"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
                text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
-              {...register('password', { required: true })}
+              {...register("password", {
+                required: "La contraseña es obligatoria",
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                  message:
+                    "Debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo",
+                },
+              })}
             />
+            {errors.password && (
+              <p className="text-red-600 text-xs sm:text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="confirmPassword"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Repite la contraseña:
             </label>
             <input
               id="confirmPassword"
               type="password"
-              placeholder="123456B."
+              placeholder="Repite tu contraseña segura"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
                text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
-              {...register('confirmPassword', { required: true })}
+              {...register("confirmPassword", {
+                required: "Por favor repite la contraseña",
+                validate: (value) =>
+                  value === watch("password") || "Las contraseñas no coinciden",
+              })}
             />
+            {errors.confirmPassword && (
+              <p className="text-red-600 text-xs sm:text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-xs sm:text-sm">
             <input
               type="checkbox"
-              {...register('termsAccepted', { required: true })}
+              {...register("termsAccepted", { required: true })}
               className="h-4 w-4 rounded border-gray-300 text-sky-600 accent-sky-600"
             />
             <span>Acepto la política de privacidad y cookies</span>
@@ -147,12 +193,14 @@ export default function RegisterPage() {
           )}
 
           {error && (
-            <span className="block text-xs sm:text-sm font-medium text-red-600">{error}</span>
+            <span className="block text-xs sm:text-sm font-medium text-red-600">
+              {error}
+            </span>
           )}
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-emerald-500 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             Crear cuenta
           </button>
