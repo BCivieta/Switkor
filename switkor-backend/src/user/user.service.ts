@@ -15,6 +15,4 @@ export class UserService {
       where: { id },
     });
   }
-
-  // (otros métodos que ya tengas...)
 }

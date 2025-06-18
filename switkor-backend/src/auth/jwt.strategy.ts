@@ -9,11 +9,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // busca el token en el header
       ignoreExpiration: false,
-      secretOrKey: 'supersecreto', // la misma clave que usaste en JwtModule
+      secretOrKey: 'supersecreto', // la misma clave que en JwtModule
     });
   }
 
-  // El payload lo puedes usar luego como req.user
   async validate(payload: any) {
     return this.userService.findById(payload.sub);
   }
