@@ -8,21 +8,22 @@ import { AuthModule } from './auth/auth.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { TrainingPlanModule } from './training-plan/training-plan.module';
 import { TrainingSessionModule } from './training-session/training-session.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), //habilita el uso de process.env
     // Configuramos la conexión a la base de datos usando TypeORM
     TypeOrmModule.forRoot({
-      type: 'sqlite', // Tipo de base de datos: SQLite
-      database: 'switkor-dev.db', // Nombre del archivo donde se guardará la base de datos local
-
-      // Esta línea busca automáticamente todas las entidades (tablas) que definamos
-      // en cualquier archivo que termine en .entity.ts o .entity.js
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-
-      // Esta opción crea automáticamente las tablas basándose en las entidades.
-      // ¡Úsalo solo en desarrollo! En producción se deben usar migraciones.
-      synchronize: true,
+      synchronize: true, // 👈 solo en desarrollo
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
     UserModule,
     AuthModule,
