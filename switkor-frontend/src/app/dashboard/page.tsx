@@ -62,9 +62,15 @@ export default function DashboardPage() {
 
         setSessionsByDate(sessionsMap);
 
-        const futureSession = plan.sessions?.find(
-          (s) => new Date(s.date) >= new Date()
-        );
+        const now = new Date();
+
+        const futureSession = plan.sessions?.find((s) => {
+          const sessionStart = new Date(s.date); // ej. 2025-06-19T00:00:00
+          const sessionEnd = new Date(sessionStart); // clonamos
+          sessionEnd.setHours(23, 59, 59, 999); // la sesión expira a las 23:59:59.999
+
+          return sessionEnd >= now;
+        });
 
         if (futureSession) {
           setNextSessionDate(formatDateKey(new Date(futureSession.date)));

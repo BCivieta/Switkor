@@ -85,7 +85,7 @@ export class TrainingPlanService {
         const offset = dayOffsets[dayIndex];
         const sessionDate = addDays(startDate, (week - 1) * 7 + offset);
 
-        const session = this.sessionRepo.create({
+        let session = this.sessionRepo.create({
           trainingPlan: plan,
           date: sessionDate,
           weekNumber: week,
@@ -98,7 +98,7 @@ export class TrainingPlanService {
             daysPerWeek === 5 && dayIndex === 4 ? 'recovery' : 'main',
         });
 
-        await this.sessionRepo.save(session);
+        session = await this.sessionRepo.save(session);
 
         if (session.sessionType === 'recovery') {
           const recoveryExercises = await this.baseExerciseRepo.find({

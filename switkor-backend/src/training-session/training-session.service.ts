@@ -10,13 +10,13 @@ export class TrainingSessionService {
     private readonly sessionRepo: Repository<TrainingSession>,
   ) {}
 
-  async getSessionById(id: number , userId?: number): Promise<TrainingSession> {
+  async getSessionById(id: number, userId?: number): Promise<TrainingSession> {
     const session = await this.sessionRepo.findOne({
       where: {
         id,
         trainingPlan: {
-        user: { id: userId }
-        }
+          user: { id: userId },
+        },
       },
       relations: ['trainingPlan', 'exercises', 'exercises.exercise'],
     });

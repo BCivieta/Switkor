@@ -10,7 +10,6 @@ import { TrainingPlanModule } from './training-plan/training-plan.module';
 import { TrainingSessionModule } from './training-session/training-session.module';
 import { ConfigModule } from '@nestjs/config';
 
-console.log('DATABASE_URL ->', process.env.DATABASE_URL)
 @Module({
   imports: [
     ConfigModule.forRoot(), //habilita el uso de process.env

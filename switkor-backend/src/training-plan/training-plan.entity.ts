@@ -4,7 +4,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
-  JoinColumn, 
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { TrainingSession } from '../training-session/training-session.entity';
@@ -38,7 +38,7 @@ export class TrainingPlan {
   @Column({ type: 'date', name: 'end_date' })
   endDate: Date;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @OneToMany(() => TrainingSession, (session) => session.trainingPlan)
