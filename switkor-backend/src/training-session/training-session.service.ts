@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TrainingSession } from './training-session.entity';
@@ -10,10 +10,21 @@ export class TrainingSessionService {
     private readonly sessionRepo: Repository<TrainingSession>,
   ) {}
 
-  async getSessionById(id: number): Promise<TrainingSession | null> {
-    return this.sessionRepo.findOne({
-      where: { id },
+  async getSessionById(id: number , userId?: number): Promise<TrainingSession> {
+    const session = await this.sessionRepo.findOne({
+      where: {
+        id,
+        trainingPlan: {
+        user: { id: userId }
+        }
+      },
       relations: ['trainingPlan', 'exercises', 'exercises.exercise'],
     });
+
+    if (!session) {
+      throw new NotFoundException('Sesión no encontrada');
+    }
+
+    return session;
   }
 }

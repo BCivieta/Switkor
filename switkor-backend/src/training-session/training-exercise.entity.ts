@@ -11,7 +11,7 @@ import { ExerciseBlock } from '../common/enums/exercise-block.enum';
 
 @Entity()
 export class TrainingExercise {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @ManyToOne(() => TrainingSession, (session) => session.exercises, {
@@ -20,7 +20,8 @@ export class TrainingExercise {
   @JoinColumn({ name: 'trainingSessionId' })
   session: TrainingSession;
 
-  @ManyToOne(() => Exercise)
+  @ManyToOne(() => Exercise) 
+  @JoinColumn({ name: 'exerciseId' })
   exercise: Exercise;
 
   @Column()

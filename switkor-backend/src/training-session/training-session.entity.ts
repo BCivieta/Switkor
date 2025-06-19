@@ -4,13 +4,14 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn, 
 } from 'typeorm';
 import { TrainingPlan } from '../training-plan/training-plan.entity';
 import { TrainingExercise } from './training-exercise.entity';
 
 @Entity('training_session')
 export class TrainingSession {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ name: 'dayNumber' })
@@ -19,6 +20,7 @@ export class TrainingSession {
   @ManyToOne(() => TrainingPlan, (plan) => plan.sessions, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'trainingPlanId' })
   trainingPlan: TrainingPlan;
 
   @Column({ type: 'date' })

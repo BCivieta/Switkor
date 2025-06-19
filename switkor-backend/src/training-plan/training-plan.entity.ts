@@ -4,18 +4,20 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn, 
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { TrainingSession } from '../training-session/training-session.entity';
 
 @Entity()
 export class TrainingPlan {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @ManyToOne(() => User, ({ trainingPlans }) => trainingPlans, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column()

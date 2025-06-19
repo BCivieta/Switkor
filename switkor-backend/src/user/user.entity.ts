@@ -5,7 +5,7 @@ import { TrainingPlan } from '../training-plan/training-plan.entity';
 @Entity()
 export class User {
   // Columna "id" auto-incremental y clave primaria
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   // Columna para el email del usuario
