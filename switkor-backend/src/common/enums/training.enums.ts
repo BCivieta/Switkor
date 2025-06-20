@@ -8,7 +8,6 @@ export enum Goal {
   MUSCLE_GAIN = 'muscle_gain',
   STRENGTH = 'strength',
   HEALTH = 'health',
-  GENERAL = 'general',
 }
 
 export enum Category {

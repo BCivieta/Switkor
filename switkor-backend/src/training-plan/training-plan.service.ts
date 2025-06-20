@@ -10,6 +10,7 @@ import { CreatePlanDto } from './dto/create-plan.dto';
 import { User } from '../user/user.entity';
 import { addDays, startOfWeek, isMonday, addWeeks } from 'date-fns';
 import { ExerciseBlock } from '../common/enums/exercise-block.enum';
+import { Goal } from '../common/enums/training.enums';
 
 @Injectable()
 export class TrainingPlanService {
@@ -66,104 +67,79 @@ export class TrainingPlanService {
     await this.planRepo.save(plan);
 
     // Define qué días de la semana se entrena en función de los días elegidos
-    const dayOffsetsMap = {
-      3: [0, 2, 4], // Lunes, Miércoles, Viernes
-      4: [0, 1, 3, 5], // Lunes, Martes, Jueves, Sábado
-      5: [0, 1, 3, 5, 6], // Lunes, Martes, Jueves, Sábado, Domingo
-    };
-
-    const dayOffsets = dayOffsetsMap[daysPerWeek];
-
-    // Creamos un mapa para guardar los ejercicios de la semana 1
-    const weekOneExercisesMap: Record<
-      number,
-      { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
-    > = {};
-
+    const dayOffsetsMap = { 3: [0,2,4], 4: [0,1,3,5], 5: [0,1,3,5,6] };
+    const sessionsToInsert: Partial<TrainingSession>[] = [];
     for (let week = 1; week <= 4; week++) {
-      for (let dayIndex = 0; dayIndex < daysPerWeek; dayIndex++) {
-        const offset = dayOffsets[dayIndex];
-        const sessionDate = addDays(startDate, (week - 1) * 7 + offset);
-
-        let session = this.sessionRepo.create({
+      for (let dayIdx = 0; dayIdx < daysPerWeek; dayIdx++) {
+        const offset = dayOffsetsMap[daysPerWeek][dayIdx];
+        const date = addDays(startDate, (week -1)*7 + offset);
+        sessionsToInsert.push({
           trainingPlan: plan,
-          date: sessionDate,
+          date,
           weekNumber: week,
-          dayOfWeek: sessionDate.toLocaleDateString('es-ES', {
-            weekday: 'long',
-          }),
-          dayNumber: dayIndex + 1,
-          focus: this.getFocusForDay(dayIndex + 1, daysPerWeek).join(','),
-          sessionType:
-            daysPerWeek === 5 && dayIndex === 4 ? 'recovery' : 'main',
+          dayOfWeek: date.toLocaleDateString('es-ES',{weekday:'long'}),
+          dayNumber: dayIdx + 1,
+          focus: this.getFocusForDay(dayIdx+1, daysPerWeek).join(','),
+          sessionType: daysPerWeek===5 && dayIdx===4 ? 'recovery' : 'main',
         });
-
-        session = await this.sessionRepo.save(session);
-
-        if (session.sessionType === 'recovery') {
-          const recoveryExercises = await this.baseExerciseRepo.find({
-            where: { category: 'recovery' },
-          });
-
-          for (let i = 0; i < recoveryExercises.length; i++) {
-            const ex = this.exerciseRepo.create({
-              session,
-              exercise: recoveryExercises[i],
-              sets: 1,
-              reps: '60 segundos',
-              order: i + 1,
-              block: ExerciseBlock.RECOVERY,
-            });
-            await this.exerciseRepo.save(ex);
-          }
-          continue; // para saltar el resto del bucle
-        }
-
-        if (session.sessionType === 'main') {
-          let exercises;
-
-          // Copiar los ejercicios de la semana 1 si el nivel es beginner,
-          // o si es intermediate/advanced y el objetivo no es salud
-          const shouldCopyWeekOne =
-            (level === 'beginner' ||
-              ((level === 'intermediate' || level === 'advanced') &&
-                goal !== 'health')) &&
-            week > 1;
-
-          if (shouldCopyWeekOne) {
-            // Clonamos los ejercicios guardados de la semana 1 para este día
-            exercises = weekOneExercisesMap[dayIndex];
-          } else {
-            // Generamos nuevos ejercicios
-            exercises = await this.generateExercises(
-              level,
-              sex,
-              goal,
-              session.focus,
-            );
-            if (week === 1) {
-              // Guardamos los ejercicios generados de la semana 1 para este día
-              weekOneExercisesMap[dayIndex] = exercises;
-            }
-          }
-
-          for (let i = 0; i < exercises.length; i++) {
-            const ex = this.exerciseRepo.create({
-              session,
-              exercise: exercises[i].exercise,
-              sets: exercises[i].sets,
-              reps: exercises[i].reps,
-              order: i + 1,
-              block: exercises[i].block,
-            });
-            await this.exerciseRepo.save(ex);
-          }
-        }
       }
     }
-    //debug
-    console.log('el plan', plan);
-    //debug
+    // Bulk insert de sesiones
+    // Bulk insert de sesiones con QueryBuilder
+const { generatedMaps } = await this.sessionRepo
+  .createQueryBuilder()
+  .insert()
+  .into(TrainingSession)
+  .values(sessionsToInsert)
+  .returning('*')
+  .execute();
+// Convertir maps a instancias de TrainingSession\ nconst savedSessions = generatedMaps as TrainingSession[];
+const savedSessions = generatedMaps as TrainingSession[];
+
+    // 5) Refactor: Generar todos los ejercicios y guardarlos de una sola vez
+    const exercisesToInsert: Partial<TrainingExercise>[] = [];
+    const weekOneMap: Record<number, { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]> = {};
+
+    for (const session of savedSessions) {
+      // Filtrar base de ejercicios por goal
+      const allExercises = await this.baseExerciseRepo.find();
+      const filteredByGoal = allExercises.filter(e => e.goal.includes(goal as Goal));
+
+      if (session.sessionType === 'recovery') {
+        // Recuperación sin cambios lógicos, pero acumulado en array
+        const recs = filteredByGoal.filter(e => e.category==='recovery');
+        recs.forEach((ex,i) => exercisesToInsert.push({
+          session,
+          exercise: ex,
+          sets: 1,
+          reps: '60 segundos',
+          order: i+1,
+          block: ExerciseBlock.RECOVERY,
+        }));
+      } else {
+        // Lógica main/repeat refactorizada para usar weekOneMap
+        const shouldCopy =
+          (level==='beginner' || ((level==='intermediate'||level==='advanced') && goal!==Goal.HEALTH))
+          && session.weekNumber > 1;
+        let list = shouldCopy
+          ? weekOneMap[session.dayNumber]
+          : await this.generateExercises(level, sex, goal as Goal, session.focus);
+        if (!shouldCopy && session.weekNumber===1) {
+          weekOneMap[session.dayNumber] = list;
+        }
+        list.forEach((e,i) => exercisesToInsert.push({
+          session,
+          exercise: e.exercise,
+          sets: e.sets,
+          reps: e.reps,
+          order: i+1,
+          block: e.block,
+        }));
+      }
+    }
+    // Bulk insert de ejercicios
+    await this.exerciseRepo.save(exercisesToInsert as TrainingExercise[]);
+
     return plan;
   }
 
@@ -220,12 +196,15 @@ export class TrainingPlanService {
   async generateExercises(
     level: string,
     sex: string,
-    goal: string,
+    goal: Goal,
     focus: string,
   ): Promise<
     { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
   > {
     const allExercises = await this.baseExerciseRepo.find();
+    const filteredByGoal = allExercises.filter((e) =>
+      e.goal.includes(goal as Goal),
+    );
     const selected: {
       exercise: Exercise;
       sets: number;
@@ -264,7 +243,7 @@ export class TrainingPlanService {
       goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
 
     //BLOQUE 1 Calentamiento
-    const warmups = allExercises.filter((e) => e.pattern === 'warmup');
+    const warmups = filteredByGoal.filter((e) => e.pattern === 'warmup');
     selected.push(
       ...this.pickExercises(warmups, 4, 2, '10-12', ExerciseBlock.WARMUP),
     );
@@ -273,7 +252,7 @@ export class TrainingPlanService {
     // Ejercicios principales según los patrones del día y objetivo
 
     for (const pattern of focusPatterns) {
-      const main = allExercises.filter(
+      const main = filteredByGoal.filter(
         (e) => e.pattern === pattern && e.category?.includes('main_basic'),
       );
 
@@ -284,7 +263,7 @@ export class TrainingPlanService {
 
     // main_complementary solo si nivel avanzado
     if (level === 'advanced') {
-      const complementaryCandidates = allExercises.filter(
+      const complementaryCandidates = filteredByGoal.filter(
         (e) =>
           focusPatterns.includes(e.pattern) &&
           e.category === 'main_complementary',
@@ -301,10 +280,10 @@ export class TrainingPlanService {
     }
 
     //Core, se aplica siempre. Dividido entre anti-extension y rotación (1 y 1)
-    const coreAntiExtension = allExercises.filter((e) =>
+    const coreAntiExtension = filteredByGoal.filter((e) =>
       e.pattern?.startsWith('core_anti_extension'),
     );
-    const coreRotation = allExercises.filter(
+    const coreRotation = filteredByGoal.filter(
       (e) =>
         e.pattern?.startsWith('core_anti_rotation') ||
         e.pattern?.startsWith('core_rotation'),
@@ -324,7 +303,7 @@ export class TrainingPlanService {
 
     // BLOQUE 3: Global solo avanzado
     if (level === 'advanced') {
-      const global = allExercises.filter((e) => e.pattern === 'global');
+      const global = filteredByGoal.filter((e) => e.pattern === 'global');
       selected.push(
         ...this.pickExercises(
           global,
@@ -337,7 +316,7 @@ export class TrainingPlanService {
     }
 
     //BLOQUE 4: Complementario (accessory) + hiit si es salud
-    const accessory = allExercises.filter((e) => e.category === 'accessory');
+    const accessory = filteredByGoal.filter((e) => e.category === 'accessory');
 
     const legPatterns = ['isolation_leg_push', 'isolation_leg_pull'];
     const armPatterns = ['isolation_arm_push', 'isolation_arm_pull'];
@@ -390,7 +369,7 @@ export class TrainingPlanService {
       );
     }
     // HIIT solo si objetivo es salud
-    if (goal === 'health') {
+    if (goal === Goal.HEALTH) {
       const hiit = accessory.filter((e) => e.pattern === 'hiit');
       selected.push(
         ...this.pickExercises(hiit, 1, 3, '20s-40s', ExerciseBlock.ACCESSORY),

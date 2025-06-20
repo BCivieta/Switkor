@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Goal } from '../common/enums/training.enums';
 
 @Entity()
 export class Exercise {
@@ -18,8 +19,13 @@ export class Exercise {
   @Column()
   level: string; // 'beginner', 'intermediate', 'advanced'
 
-  @Column({ type: 'varchar', default: 'general', nullable: false })
-  goal: string; // 'muscle_gain', 'strength', 'health'
+  @Column({
+    type: 'enum',
+    enum: Goal,
+    array: true,
+    default: [Goal.MUSCLE_GAIN, Goal.STRENGTH, Goal.HEALTH],
+  })
+  goal: Goal[];
 
   @Column({ default: 'main_basic' })
   category:
