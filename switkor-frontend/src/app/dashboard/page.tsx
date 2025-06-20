@@ -9,6 +9,9 @@ import { PlusIcon, LogOutIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import CustomCalendar from "@/components/CustomCalendar";
 import MobileMenu from "@/components/mobileMenu";
+import { subMonths, format } from "date-fns";
+import { es } from "date-fns/locale";
+import TrainingHistoryChart from "@/components/TrainingHistoryChart";
 
 interface Session {
   id: number;
@@ -16,7 +19,7 @@ interface Session {
   weekNumber: number;
   focus: string;
   sessionType: string;
-  completed: boolean; 
+  completed: boolean;
 }
 
 interface Plan {
@@ -29,30 +32,49 @@ export default function DashboardPage() {
   const logout = useAuthStore((state) => state.logout);
   const [sessionsByDate, setSessionsByDate] = useState<Record<
     string,
-    { id: number; label: string; focus: string; sessionType: string; completed: boolean; }
+    {
+      id: number;
+      label: string;
+      focus: string;
+      sessionType: string;
+      completed: boolean;
+    }
   > | null>(null);
 
   const [nextSessionDate, setNextSessionDate] = useState<string | null>(null);
   const [nextSessionId, setNextSessionId] = useState<number | null>(null);
   const formatDateKey = (date: Date) => date.toLocaleDateString("sv-SE"); // 'YYYY-MM-DD'
   const username = useAuthStore((state) => state.name || "");
+  const [streak, setStreak] = useState<number>(0);
+  const [chartData, setChartData] = useState<
+    { month: string; count: number }[]
+  >([]);
+  const today = new Date();
 
   useEffect(() => {
-    const fetchPlan = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get<Plan>("/plan/current");
-        //debug
-        console.log("Respuesta del backend:", res.data);
-        //debug
-        const plan = res.data;
+        if (!token) return;
+        
+        const planRes = await api.get<Plan[]>("/plan/current-and-previous");
+        const plans: Plan[] = planRes.data;
 
         const sessionsMap: Record<
           string,
-          { id: number; label: string; focus: string; sessionType: string; completed:boolean;}
+          {
+            id: number;
+            label: string;
+            focus: string;
+            sessionType: string;
+            completed: boolean;
+          }
         > = {};
-        plan.sessions?.forEach((session) => {
-          const date = formatDateKey(new Date(session.date));
-          sessionsMap[date] = {
+        
+        const allSessions: Session[] = plans.flatMap((p: Plan) => p.sessions || []);
+
+        allSessions.forEach((session) => {
+          const key = formatDateKey(new Date(session.date));
+          sessionsMap[key] = {
             id: session.id,
             label: `Semana ${session.weekNumber}`,
             focus: session.focus,
@@ -63,31 +85,61 @@ export default function DashboardPage() {
 
         setSessionsByDate(sessionsMap);
 
-        const now = new Date();
+        
 
-        const futureSession = plan.sessions
-          ?.filter((s) => !s.completed) //  ◀︎ excluye las completadas
+        // Próxima sesión no completada
+        const future = allSessions
+          .filter((s) => !s.completed)
           .find((s) => {
-            const sessionStart = new Date(s.date); // ej. 2025-06-19T00:00:00
-            const sessionEnd = new Date(sessionStart); // clonamos
-            sessionEnd.setHours(23, 59, 59, 999); // la sesión expira a las 23:59:59.999
-
-            return sessionEnd >= now;
+            const start = new Date(s.date);
+            const end = new Date(start);
+            end.setHours(23, 59, 59, 999);
+            return end >= today;
           });
 
-        if (futureSession) {
-          setNextSessionDate(formatDateKey(new Date(futureSession.date)));
-          setNextSessionId(futureSession.id);
+        if (future) {
+          setNextSessionDate(formatDateKey(new Date(future.date)));
+          setNextSessionId(future.id);
         }
+        // 🆕 Obtener sesiones completadas del historial completo
+        const historyRes = await api.get<Session[]>("/session/history");
+        const completedSessions = historyRes.data;
+
+        // 🆕 Calcular racha real desde sesiones históricas
+        const sorted = completedSessions
+          .map((s) => ({ ...s, dateObj: new Date(s.date) }))
+          .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
+
+        let count = 0;
+        for (const s of sorted) {
+          if (s.dateObj > today) continue;
+          if (s.completed) count++;
+          else break;
+        }
+        setStreak(count);
+
+        // 🆕 Calcular datos para gráfica últimos 6 meses
+        const data: { month: string; count: number }[] = [];
+        for (let i = 5; i >= 0; i--) {
+          const date = subMonths(new Date(), i);
+          const monthLabel = format(date, "MMM yyyy", { locale: es });
+          const cnt = completedSessions.filter((s) => {
+            const d = new Date(s.date);
+            return (
+              d.getMonth() === date.getMonth() &&
+              d.getFullYear() === date.getFullYear()
+            );
+          }).length;
+          data.push({ month: monthLabel, count: cnt });
+        }
+        setChartData(data);
       } catch (err) {
-        console.error("Error al cargar el plan:", err);
-        setSessionsByDate({});
+        console.error("Error al cargar datos:", err);
       }
     };
 
-    if (token) fetchPlan();
+    fetchData();
   }, [token]);
-
   // Si aún estamos esperando la respuesta, mostramos un loader
   if (sessionsByDate === null) {
     return (
@@ -102,8 +154,8 @@ export default function DashboardPage() {
   };
 
   const handleDayClick = (value: Date) => {
-    const iso = formatDateKey(value);
-    const sessionInfo = sessionsByDate[iso];
+    const key = formatDateKey(value);
+    const sessionInfo = sessionsByDate[key];
     if (sessionInfo) {
       router.push(`/dashboard/session/${sessionInfo.id}`);
     }
@@ -173,8 +225,7 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
-
-      <section className="bg-gray-100 rounded-3xl py-6 px-2 sm:px-16 shadow-md mt-4">
+      <section className="bg-gray-100 rounded-3xl py-6 px-2 sm:px-10 lg:px-16 xl:px-24 shadow-md mt-4 max-w-7xl mx-auto">
         <h2 className="text-xl font-semibold mb-4 text-sky-900">
           Tu calendario de entrenamiento
         </h2>
@@ -183,10 +234,26 @@ export default function DashboardPage() {
             ⚠️ No tienes planes activos. Crea uno para comenzar.
           </div>
         )}
-        <CustomCalendar
-          sessionsByDate={sessionsByDate}
-          onClickDay={handleDayClick}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Calendario */}
+          <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
+            <CustomCalendar
+              sessionsByDate={sessionsByDate}
+              onClickDay={handleDayClick}
+            />
+          </div>
+
+          {/* Racha y gráfica */}
+          <div className="w-full max-w-[500px] flex flex-col items-center self-center">
+            <div className="mt-4 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-center text-base sm:text-lg w-full max-w-md">
+              Llevas una racha de <strong>{streak}</strong> entrenamientos sin
+              fallar. 🎉
+            </div>
+            <div className="mt-6 w-full">
+              <TrainingHistoryChart data={chartData} />
+            </div>
+          </div>
+        </div>
       </section>
       <div className="mt-4 mb-8 flex gap-6 justify-center text-sm text-gray-700">
         <div className="flex items-center gap-2">
@@ -200,4 +267,12 @@ export default function DashboardPage() {
       </div>
     </main>
   );
+}
+{
+  /* para que solo aparezca cuando al menos llevas una
+        {streak > 0 && (
+        <div className="mt-4 …">
+          Llevas una racha de <strong>{streak}</strong> entrenamientos sin fallar. 🎉
+        </div>
+        )} */
 }

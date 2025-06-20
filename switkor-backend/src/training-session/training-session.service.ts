@@ -56,4 +56,20 @@ export class TrainingSessionService {
     session.completed = true;
     return this.sessionRepo.save(session);
   }
+
+  async getCompletedSessionsByUser(userId: number): Promise<TrainingSession[]> {
+  return this.sessionRepo.find({
+    where: {
+      completed: true,
+      trainingPlan: {
+        user: { id: userId },
+      },
+    },
+    relations: ['trainingPlan'],
+    order: {
+      date: 'ASC',
+    },
+  });
+}
+
 }

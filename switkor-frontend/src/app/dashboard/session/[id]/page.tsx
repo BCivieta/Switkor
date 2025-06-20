@@ -157,6 +157,12 @@ export default function SessionPage() {
               </button>
             </div>
           )}
+          {/* Mensaje verde si ya completada */}
+          {session.completed && (
+            <div className="mb-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
+              <span>Esta sesión ya fue completada 💪</span>
+            </div>
+          )}   
           {/* Card gris*/}
           <div className=" bg-gray-50 rounded-3xl p-4 sm:p-6 shadow-inner px-1 sm:px-6">
             {/* Etiquetas */}

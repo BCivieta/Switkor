@@ -47,7 +47,7 @@ export class TrainingPlanService {
         trainingPlan: {
           user: { id: user.id },
         },
-        date: MoreThanOrEqual(new Date()),
+        date: MoreThanOrEqual(startDate),
       },
       relations: ['trainingPlan', 'trainingPlan.user'],
     });
@@ -404,4 +404,20 @@ const savedSessions = generatedMaps as TrainingSession[];
       ],
     });
   }
+
+  async getCurrentAndPreviousPlans(user: User): Promise<TrainingPlan[]> {
+  return this.planRepo.find({
+    where: {
+      user: { id: user.id },
+    },
+    order: { startDate: 'DESC' },
+    take: 2,
+    relations: [
+      'sessions',
+      'sessions.exercises',
+      'sessions.exercises.exercise',
+    ],
+  });
+}
+
 }

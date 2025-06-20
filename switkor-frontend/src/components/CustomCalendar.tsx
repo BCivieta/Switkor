@@ -6,7 +6,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { patternTranslations } from '@/lib/patternTranslations';
 
 interface CustomCalendarProps {
-  sessionsByDate: Record<string,  { id: number; label: string; focus: string; sessionType: string }>;
+  sessionsByDate: Record<string,  { id: number; label: string; focus: string; sessionType: string; completed: boolean }>;
   onClickDay: (value: Date) => void;
 }
 
@@ -24,7 +24,7 @@ export default function CustomCalendar({ sessionsByDate, onClickDay }: CustomCal
         .map((key) => patternTranslations[key.trim()] || key)
         .join(' / ');
 
-        const emoji = session.sessionType === 'recovery' ? '🧘' : '🏋️';
+        const icon = session.completed ? '✔️' : session.sessionType === 'recovery' ? '🧘' : '🏋️';
 
       return (
         <div
@@ -32,7 +32,7 @@ export default function CustomCalendar({ sessionsByDate, onClickDay }: CustomCal
           data-tooltip-content={translatedFocus}
           className="text-lg text-emerald-700 emoji-session"
         >
-          {emoji}
+          {icon}
         </div>
       );
     }
@@ -43,35 +43,35 @@ export default function CustomCalendar({ sessionsByDate, onClickDay }: CustomCal
   const iso = formatDateKey(date);
   const session = sessionsByDate[iso];
 
-  //debug
-   if (session) {
-    console.log(iso, session.sessionType); 
-  }
-  //debug
+  
   if (!session) return null;
 
-  if (session.sessionType === 'recovery') return ['tile-recovery'];
-  return ['tile-main'];; // todo lo que no sea recovery se considera sesión normal
+ if (session.completed) return ['tile-completed'];
+    if (session.sessionType === 'recovery') return ['tile-recovery'];
+    return ['tile-main']; 
   };
   return (
-    <div className="w-full sm:max-w-3xl sm:mx-auto px-0 scale-90 sm:scale-85 sm:origin-top">
-      <Calendar
-        onClickDay={onClickDay}
-        tileContent={tileContent}
-        tileClassName={tileClassName}
-        prevLabel={<span className="text-emerald-600 text-3xl font-bold ml-2 me-2">{'‹'}</span>}
-        nextLabel={<span className="text-emerald-600 text-3xl font-bold mr-2 ms-2">{'›'}</span>}
-        prev2Label={null}
-        next2Label={null}
-        navigationLabel={({ label }) => (
-          <span className="text-base sm:text-lg font-semibold mx-4">
-            {label}
-          </span>
-        )}
-        
-        className="!border-none p-4 rounded-3xl shadow-md bg-white"
-      />
-      <Tooltip id="session-tooltip" />
+    <div className="w-full sm:max-w-3xl sm:mx-auto px-0 flex justify-center">
+        <div className="origin-top inline-block">
+          <Calendar
+            onClickDay={onClickDay}
+            tileContent={tileContent}
+            tileClassName={tileClassName}
+            prevLabel={<span className="text-emerald-600 text-3xl font-bold ml-2 me-2">{'‹'}</span>}
+            nextLabel={<span className="text-emerald-600 text-3xl font-bold mr-2 ms-2">{'›'}</span>}
+            prev2Label={null}
+            next2Label={null}
+            navigationLabel={({ label }) => (
+              <span className="text-base sm:text-lg font-semibold mx-4">
+                {label}
+              </span>
+            )}
+            
+            className="!border-none p-4 rounded-3xl shadow-md bg-white"
+          />
+          <Tooltip id="session-tooltip" />
+        </div>
     </div>
+     
   );
 }
