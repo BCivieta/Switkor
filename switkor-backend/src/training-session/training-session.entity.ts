@@ -40,4 +40,7 @@ export class TrainingSession {
 
   @OneToMany(() => TrainingExercise, (exercise) => exercise.session)
   exercises: TrainingExercise[];
+
+  @Column({ default: false })
+  completed: boolean;
 }

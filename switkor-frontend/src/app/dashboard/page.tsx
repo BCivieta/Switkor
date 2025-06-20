@@ -16,6 +16,7 @@ interface Session {
   weekNumber: number;
   focus: string;
   sessionType: string;
+  completed: boolean; 
 }
 
 interface Plan {
@@ -26,12 +27,11 @@ export default function DashboardPage() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const logout = useAuthStore((state) => state.logout);
-  const [sessionsByDate, setSessionsByDate] = useState<
-    Record<
-      string,
-      { id: number; label: string; focus: string; sessionType: string }
-    >
-  >({});
+  const [sessionsByDate, setSessionsByDate] = useState<Record<
+    string,
+    { id: number; label: string; focus: string; sessionType: string; completed: boolean; }
+  > | null>(null);
+
   const [nextSessionDate, setNextSessionDate] = useState<string | null>(null);
   const [nextSessionId, setNextSessionId] = useState<number | null>(null);
   const formatDateKey = (date: Date) => date.toLocaleDateString("sv-SE"); // 'YYYY-MM-DD'
@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
         const sessionsMap: Record<
           string,
-          { id: number; label: string; focus: string; sessionType: string }
+          { id: number; label: string; focus: string; sessionType: string; completed:boolean;}
         > = {};
         plan.sessions?.forEach((session) => {
           const date = formatDateKey(new Date(session.date));
@@ -57,6 +57,7 @@ export default function DashboardPage() {
             label: `Semana ${session.weekNumber}`,
             focus: session.focus,
             sessionType: session.sessionType,
+            completed: session.completed,
           };
         });
 
@@ -64,13 +65,15 @@ export default function DashboardPage() {
 
         const now = new Date();
 
-        const futureSession = plan.sessions?.find((s) => {
-          const sessionStart = new Date(s.date); // ej. 2025-06-19T00:00:00
-          const sessionEnd = new Date(sessionStart); // clonamos
-          sessionEnd.setHours(23, 59, 59, 999); // la sesión expira a las 23:59:59.999
+        const futureSession = plan.sessions
+          ?.filter((s) => !s.completed) //  ◀︎ excluye las completadas
+          .find((s) => {
+            const sessionStart = new Date(s.date); // ej. 2025-06-19T00:00:00
+            const sessionEnd = new Date(sessionStart); // clonamos
+            sessionEnd.setHours(23, 59, 59, 999); // la sesión expira a las 23:59:59.999
 
-          return sessionEnd >= now;
-        });
+            return sessionEnd >= now;
+          });
 
         if (futureSession) {
           setNextSessionDate(formatDateKey(new Date(futureSession.date)));
@@ -78,12 +81,21 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.error("Error al cargar el plan:", err);
+        setSessionsByDate({});
       }
     };
 
     if (token) fetchPlan();
   }, [token]);
 
+  // Si aún estamos esperando la respuesta, mostramos un loader
+  if (sessionsByDate === null) {
+    return (
+      <main className="flex items-center justify-center h-screen">
+        <p className="text-lg text-sky-900">Cargando tu plan…</p>
+      </main>
+    );
+  }
   const handleLogout = () => {
     logout();
     router.push("/login");
@@ -166,7 +178,7 @@ export default function DashboardPage() {
         <h2 className="text-xl font-semibold mb-4 text-sky-900">
           Tu calendario de entrenamiento
         </h2>
-        {Object.keys(sessionsByDate).length === 0 && (
+        {sessionsByDate && Object.keys(sessionsByDate).length === 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mt-4 text-center text-base font-semibold mb-4">
             ⚠️ No tienes planes activos. Crea uno para comenzar.
           </div>

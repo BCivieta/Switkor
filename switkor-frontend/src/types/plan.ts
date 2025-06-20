@@ -17,6 +17,7 @@ export interface Session {
   focus: string;
   trainingPlan: {goal: 'health' | 'strength' | 'muscle_gain';};
   exercises: Exercise[];
+  completed: boolean;
 }
 
 export interface Plan {
