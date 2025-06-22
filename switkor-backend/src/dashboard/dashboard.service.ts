@@ -30,41 +30,52 @@ export class DashboardService {
           date: new Date(next.date).toISOString().split('T')[0], // YYYY-MM-DD
         }
       : null;
+    
 
-    // 2. Obtener la racha de sesiones completadas
-    const completedSessions = allSessions
-      .filter((s) => s.completed)
-      .map((s) => ({
-        ...s,
-        dateObj: new Date(s.date),
-      }))
-      .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
+     // ✅ Crear map de conteo por mes
+    const monthCounts: Record<string, number> = {};
 
+    // Ordenar TODAS las sesiones por fecha descendente (para racha)
+    const sortedSessions = [...allSessions].map((s) => ({
+      ...s,
+      dateObj: new Date(s.date),
+    })).sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
+
+   // ✅ Inicializar meses objetivo
+    const chartData: { month: string; count: number }[] = [];
+    const targetMonths: string[] = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const refDate = subMonths(today, i);
+      const label = format(refDate, 'MMM yyyy', { locale: es });
+      monthCounts[label] = 0;
+      targetMonths.push(label);
+    }
+
+    // ✅ Contar sesiones completadas por mes solo entre los 6 últimos
+    for (const s of sortedSessions) {
+      if (!s.completed) continue;
+
+      const label = format(s.dateObj, 'MMM yyyy', { locale: es });
+      if (monthCounts[label] !== undefined) {
+        monthCounts[label]++;
+      }
+    }
+
+    for (const label of targetMonths) {
+      chartData.push({ month: label, count: monthCounts[label] });
+    }
+
+    // ✅ Calcular racha
     let streak = 0;
-    for (const s of completedSessions) {
+    for (const s of sortedSessions) {
       if (s.dateObj > today) continue;
       if (s.completed) streak++;
       else break;
     }
 
-   // Datos para gráfica últimos 6 meses
-    const chartData: { month: string; count: number }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const refDate = subMonths(today, i);
-      const label = format(refDate, 'MMM yyyy', { locale: es });
-      const count = completedSessions.filter((s) => {
-        const d = s.dateObj;
-        return (
-          d.getMonth() === refDate.getMonth() &&
-          d.getFullYear() === refDate.getFullYear()
-        );
-      }).length;
-      chartData.push({ month: label, count });
-    }
-
     return {
       allSessions,
-      completedSessions,
       nextSession,
       streak,
       chartData,
