@@ -18,5 +18,6 @@ import { Exercise } from '../exercise/exercise.entity';
   ],
   providers: [TrainingPlanService],
   controllers: [TrainingPlanController],
+  exports: [TrainingPlanService],
 })
 export class TrainingPlanModule {}

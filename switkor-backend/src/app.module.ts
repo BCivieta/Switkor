@@ -9,6 +9,7 @@ import { ExerciseModule } from './exercise/exercise.module';
 import { TrainingPlanModule } from './training-plan/training-plan.module';
 import { TrainingSessionModule } from './training-session/training-session.module';
 import { ConfigModule } from '@nestjs/config';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     ExerciseModule,
     TrainingPlanModule,
     TrainingSessionModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}

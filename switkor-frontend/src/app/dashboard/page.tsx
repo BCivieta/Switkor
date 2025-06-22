@@ -22,8 +22,9 @@ interface Session {
   completed: boolean;
 }
 
-interface Plan {
-  sessions?: Session[];
+interface DashboardData {
+  allSessions: Session[];
+  completedSessions: Session[];
 }
 
 export default function DashboardPage() {
@@ -57,21 +58,16 @@ export default function DashboardPage() {
         
         const today = new Date();
         
-        const planRes = await api.get<Plan[]>("/plan/current-and-previous");
-        const plans: Plan[] = planRes.data;
+        const res = await api.get<DashboardData>("/dashboard/data");
+        const { allSessions, completedSessions } = res.data;
 
-        const sessionsMap: Record<
-          string,
-          {
-            id: number;
-            label: string;
-            focus: string;
-            sessionType: string;
-            completed: boolean;
-          }
-        > = {};
-        
-        const allSessions: Session[] = plans.flatMap((p: Plan) => p.sessions || []);
+        const sessionsMap: Record<string, {
+          id: number;
+          label: string;
+          focus: string;
+          sessionType: string;
+          completed: boolean;
+        }> = {};
 
         allSessions.forEach((session) => {
           const key = formatDateKey(new Date(session.date));
@@ -86,9 +82,6 @@ export default function DashboardPage() {
 
         setSessionsByDate(sessionsMap);
 
-        
-
-        // Próxima sesión no completada
         const future = allSessions
           .filter((s) => !s.completed)
           .find((s) => {
@@ -102,11 +95,7 @@ export default function DashboardPage() {
           setNextSessionDate(formatDateKey(new Date(future.date)));
           setNextSessionId(future.id);
         }
-        // 🆕 Obtener sesiones completadas del historial completo
-        const historyRes = await api.get<Session[]>("/session/history");
-        const completedSessions = historyRes.data;
 
-        // 🆕 Calcular racha real desde sesiones históricas
         const sorted = completedSessions
           .map((s) => ({ ...s, dateObj: new Date(s.date) }))
           .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
