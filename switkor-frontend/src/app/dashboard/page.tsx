@@ -49,12 +49,13 @@ export default function DashboardPage() {
   const [chartData, setChartData] = useState<
     { month: string; count: number }[]
   >([]);
-  const today = new Date();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (!token) return;
+        
+        const today = new Date();
         
         const planRes = await api.get<Plan[]>("/plan/current-and-previous");
         const plans: Plan[] = planRes.data;

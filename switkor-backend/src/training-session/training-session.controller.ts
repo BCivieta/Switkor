@@ -12,6 +12,12 @@ export class TrainingSessionController {
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('history')
+  async getUserCompletedSessions(@Req() req: AuthenticatedRequest) {
+    return this.trainingSessionService.getCompletedSessionsByUser(req.user.id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async getSessionById(@Param('id') id: number) {
     const session = await this.trainingSessionService.getSessionById(
@@ -22,14 +28,9 @@ export class TrainingSessionController {
     }
     return session;
   }
+
   @Patch(':id/complete')
   async completeSession(@Param('id') id: string) {
     return this.trainingSessionService.markComplete(+id);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get('history')
-  async getUserCompletedSessions(@Req() req: AuthenticatedRequest) {
-    return this.trainingSessionService.getCompletedSessionsByUser(req.user.id);
   }
 }
