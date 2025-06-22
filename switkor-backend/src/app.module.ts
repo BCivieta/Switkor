@@ -19,7 +19,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // 👈 solo en desarrollo
+      synchronize: false, // 👈 solo en desarrollo
       extra: {
         ssl: {
           rejectUnauthorized: false,

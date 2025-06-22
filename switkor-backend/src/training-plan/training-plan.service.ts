@@ -11,6 +11,7 @@ import { User } from '../user/user.entity';
 import { addDays, startOfWeek, isMonday, addWeeks } from 'date-fns';
 import { ExerciseBlock } from '../common/enums/exercise-block.enum';
 import { Goal } from '../common/enums/training.enums';
+import { ExerciseApplicability } from '../exercise/exercise-applicability.entity';
 
 @Injectable()
 export class TrainingPlanService {
@@ -26,6 +27,9 @@ export class TrainingPlanService {
 
     @InjectRepository(Exercise)
     private baseExerciseRepo: Repository<Exercise>,
+
+    @InjectRepository(ExerciseApplicability)
+    private applicabilityRepo: Repository<ExerciseApplicability>,
   ) {}
 
   //Crea un plan de entrenamiento de 4 semanas
@@ -33,6 +37,14 @@ export class TrainingPlanService {
 
   async createPlan(dto: CreatePlanDto, user: User): Promise<TrainingPlan> {
     const { level, sex, goal, daysPerWeek } = dto;
+
+    const applicable = await this.applicabilityRepo.find({
+      relations: ['exercise'],
+      where: {
+        goal: dto.goal as Goal,
+        level: dto.level,
+      },
+    });
 
     // Calcula el lunes de la próxima semana si hoy no es lunes
     const today = new Date();
@@ -67,76 +79,109 @@ export class TrainingPlanService {
     await this.planRepo.save(plan);
 
     // Define qué días de la semana se entrena en función de los días elegidos
-    const dayOffsetsMap = { 3: [0,2,4], 4: [0,1,3,5], 5: [0,1,3,5,6] };
+    const dayOffsetsMap = { 3: [0, 2, 4], 4: [0, 1, 3, 5], 5: [0, 1, 3, 5, 6] };
     const sessionsToInsert: Partial<TrainingSession>[] = [];
     for (let week = 1; week <= 4; week++) {
       for (let dayIdx = 0; dayIdx < daysPerWeek; dayIdx++) {
         const offset = dayOffsetsMap[daysPerWeek][dayIdx];
-        const date = addDays(startDate, (week -1)*7 + offset);
+        const date = addDays(startDate, (week - 1) * 7 + offset);
         sessionsToInsert.push({
-          trainingPlan: plan,
+          trainingPlan: { id: plan.id } as any,
           date,
           weekNumber: week,
-          dayOfWeek: date.toLocaleDateString('es-ES',{weekday:'long'}),
+          dayOfWeek: date.toLocaleDateString('es-ES', { weekday: 'long' }),
           dayNumber: dayIdx + 1,
-          focus: this.getFocusForDay(dayIdx+1, daysPerWeek).join(','),
-          sessionType: daysPerWeek===5 && dayIdx===4 ? 'recovery' : 'main',
+          focus: this.getFocusForDay(dayIdx + 1, daysPerWeek).join(','),
+          sessionType: daysPerWeek === 5 && dayIdx === 4 ? 'recovery' : 'main',
         });
       }
     }
-    // Bulk insert de sesiones
+    //console.log('📅 Sesiones a insertar:', JSON.stringify(sessionsToInsert, null, 2));
     // Bulk insert de sesiones con QueryBuilder
-const { generatedMaps } = await this.sessionRepo
-  .createQueryBuilder()
-  .insert()
-  .into(TrainingSession)
-  .values(sessionsToInsert)
-  .returning('*')
-  .execute();
-// Convertir maps a instancias de TrainingSession\ nconst savedSessions = generatedMaps as TrainingSession[];
-const savedSessions = generatedMaps as TrainingSession[];
+    const updatedPlan = await this.planRepo.findOne({
+      where: { id: plan.id },
+      relations: [
+        'sessions',
+        'sessions.exercises',
+        'sessions.exercises.exercise',
+      ],
+    });
+
+    if (!updatedPlan || !updatedPlan.sessions) {
+      console.error('❌ Plan actualizado no encontrado o sin sesiones');
+      throw new Error('No se pudieron cargar las sesiones del plan');
+    }
+
+    console.log(
+      '✅ Plan actualizado con sesiones:',
+      JSON.stringify(updatedPlan, null, 2),
+    );
 
     // 5) Refactor: Generar todos los ejercicios y guardarlos de una sola vez
     const exercisesToInsert: Partial<TrainingExercise>[] = [];
-    const weekOneMap: Record<number, { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]> = {};
+    const weekOneMap: Record<
+      number,
+      { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
+    > = {};
 
-    for (const session of savedSessions) {
+    for (const session of updatedPlan.sessions) {
       // Filtrar base de ejercicios por goal
-      const allExercises = await this.baseExerciseRepo.find();
-      const filteredByGoal = allExercises.filter(e => e.goal.includes(goal as Goal));
+      const applicability = await this.applicabilityRepo.find({
+        where: {
+          goal: goal as Goal,
+          level: level as 'beginner' | 'intermediate' | 'advanced',
+        },
+        relations: ['exercise'],
+      });
+
+      const applicableExercises = applicability.map((a) => a.exercise);
 
       if (session.sessionType === 'recovery') {
         // Recuperación sin cambios lógicos, pero acumulado en array
-        const recs = filteredByGoal.filter(e => e.category==='recovery');
-        recs.forEach((ex,i) => exercisesToInsert.push({
-          session,
-          exercise: ex,
-          sets: 1,
-          reps: '60 segundos',
-          order: i+1,
-          block: ExerciseBlock.RECOVERY,
-        }));
+        const recs = applicableExercises.filter(
+          (e) => e.category === 'recovery',
+        );
+        recs.forEach((ex, i) =>
+          exercisesToInsert.push({
+            session,
+            exercise: ex,
+            sets: 1,
+            reps: '60 segundos',
+            order: i + 1,
+            block: ExerciseBlock.RECOVERY,
+          }),
+        );
       } else {
         // Lógica main/repeat refactorizada para usar weekOneMap
         const shouldCopy =
-          (level==='beginner' || ((level==='intermediate'||level==='advanced') && goal!==Goal.HEALTH))
-          && session.weekNumber > 1;
+          (level === 'beginner' ||
+            ((level === 'intermediate' || level === 'advanced') &&
+              goal !== Goal.HEALTH)) &&
+          session.weekNumber > 1;
         let list = shouldCopy
           ? weekOneMap[session.dayNumber]
-          : await this.generateExercises(level, sex, goal as Goal, session.focus);
-        if (!shouldCopy && session.weekNumber===1) {
+          : await this.generateExercises(
+              level,
+              sex,
+              goal as Goal,
+              session.focus,
+            );
+        if (!shouldCopy && session.weekNumber === 1) {
           weekOneMap[session.dayNumber] = list;
         }
-        list.forEach((e,i) => exercisesToInsert.push({
-          session,
-          exercise: e.exercise,
-          sets: e.sets,
-          reps: e.reps,
-          order: i+1,
-          block: e.block,
-        }));
+        list.forEach((e, i) =>
+          exercisesToInsert.push({
+            session,
+            exercise: e.exercise,
+            sets: e.sets,
+            reps: e.reps,
+            order: i + 1,
+            block: e.block,
+          }),
+        );
       }
     }
+
     // Bulk insert de ejercicios
     await this.exerciseRepo.save(exercisesToInsert as TrainingExercise[]);
 
@@ -201,9 +246,13 @@ const savedSessions = generatedMaps as TrainingSession[];
   ): Promise<
     { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
   > {
-    const allExercises = await this.baseExerciseRepo.find();
-    const filteredByGoal = allExercises.filter((e) =>
-      e.goal.includes(goal as Goal),
+    const applicability = await this.applicabilityRepo.find({
+      where: { goal, level: level as 'beginner' | 'intermediate' | 'advanced' },
+      relations: ['exercise'],
+    });
+
+    const allExercises = Array.from(
+      new Map(applicability.map((a) => [a.exercise.id, a.exercise])).values(),
     );
     const selected: {
       exercise: Exercise;
@@ -243,7 +292,7 @@ const savedSessions = generatedMaps as TrainingSession[];
       goal === 'muscle_gain' ? '8-12' : goal === 'strength' ? '3-6' : '10-15';
 
     //BLOQUE 1 Calentamiento
-    const warmups = filteredByGoal.filter((e) => e.pattern === 'warmup');
+    const warmups = allExercises.filter((e) => e.pattern === 'warmup');
     selected.push(
       ...this.pickExercises(warmups, 4, 2, '10-12', ExerciseBlock.WARMUP),
     );
@@ -252,7 +301,7 @@ const savedSessions = generatedMaps as TrainingSession[];
     // Ejercicios principales según los patrones del día y objetivo
 
     for (const pattern of focusPatterns) {
-      const main = filteredByGoal.filter(
+      const main = allExercises.filter(
         (e) => e.pattern === pattern && e.category?.includes('main_basic'),
       );
 
@@ -263,7 +312,7 @@ const savedSessions = generatedMaps as TrainingSession[];
 
     // main_complementary solo si nivel avanzado
     if (level === 'advanced') {
-      const complementaryCandidates = filteredByGoal.filter(
+      const complementaryCandidates = allExercises.filter(
         (e) =>
           focusPatterns.includes(e.pattern) &&
           e.category === 'main_complementary',
@@ -280,10 +329,10 @@ const savedSessions = generatedMaps as TrainingSession[];
     }
 
     //Core, se aplica siempre. Dividido entre anti-extension y rotación (1 y 1)
-    const coreAntiExtension = filteredByGoal.filter((e) =>
+    const coreAntiExtension = allExercises.filter((e) =>
       e.pattern?.startsWith('core_anti_extension'),
     );
-    const coreRotation = filteredByGoal.filter(
+    const coreRotation = allExercises.filter(
       (e) =>
         e.pattern?.startsWith('core_anti_rotation') ||
         e.pattern?.startsWith('core_rotation'),
@@ -303,7 +352,7 @@ const savedSessions = generatedMaps as TrainingSession[];
 
     // BLOQUE 3: Global solo avanzado
     if (level === 'advanced') {
-      const global = filteredByGoal.filter((e) => e.pattern === 'global');
+      const global = allExercises.filter((e) => e.pattern === 'global');
       selected.push(
         ...this.pickExercises(
           global,
@@ -316,7 +365,7 @@ const savedSessions = generatedMaps as TrainingSession[];
     }
 
     //BLOQUE 4: Complementario (accessory) + hiit si es salud
-    const accessory = filteredByGoal.filter((e) => e.category === 'accessory');
+    const accessory = allExercises.filter((e) => e.category === 'accessory');
 
     const legPatterns = ['isolation_leg_push', 'isolation_leg_pull'];
     const armPatterns = ['isolation_arm_push', 'isolation_arm_pull'];
@@ -406,18 +455,22 @@ const savedSessions = generatedMaps as TrainingSession[];
   }
 
   async getCurrentAndPreviousPlans(user: User): Promise<TrainingPlan[]> {
-  return this.planRepo.find({
-    where: {
-      user: { id: user.id },
-    },
-    order: { startDate: 'DESC' },
-    take: 2,
-    relations: [
-      'sessions',
-      'sessions.exercises',
-      'sessions.exercises.exercise',
-    ],
-  });
-}
+    const plans = await this.planRepo.find({
+      where: {
+        user: { id: user.id },
+      },
+      order: { startDate: 'DESC' },
+      take: 2,
+      relations: [
+        'sessions',
+        'sessions.exercises',
+        'sessions.exercises.exercise',
+      ],
+    });
 
+    // 🔍 LOG para ver qué devuelve exactamente
+    //console.log('📊 Planes cargados (con sesiones):', JSON.stringify(plans, null, 2));
+
+    return plans;
+  }
 }

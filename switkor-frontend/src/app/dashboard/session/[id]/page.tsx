@@ -25,9 +25,7 @@ export default function SessionPage() {
         const res = await api.get<Session>(`/session/${String(id)}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        //debug
-        console.log("Sesión recibida:", res.data);
-        //debug
+        
         setSession(res.data);
       } catch (error) {
         console.error("Error al cargar la sesión:", error);

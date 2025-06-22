@@ -19,13 +19,13 @@ export class TrainingSessionService {
           user: { id: userId },
         },
       },
-      relations: ['trainingPlan', 'exercises', 'exercises.exercise'],
+      relations: ['trainingPlan', 'exercises', 'exercises.exercise', 'exercises.exercise.applicabilities',],
     });
 
     if (!session) {
       throw new NotFoundException('Sesión no encontrada');
     }
-
+   
     return session;
   }
   //marca sesión como completada

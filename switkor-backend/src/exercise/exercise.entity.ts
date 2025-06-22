@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Goal } from '../common/enums/training.enums';
+import { OneToMany } from 'typeorm';
+import { ExerciseApplicability } from './exercise-applicability.entity';
 
 @Entity()
 export class Exercise {
@@ -35,4 +37,10 @@ export class Exercise {
     | 'warmup'
     | 'isolation'
     | 'recovery';
+
+  @OneToMany(() => ExerciseApplicability, (app) => app.exercise, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  applicabilities: ExerciseApplicability[];
 }

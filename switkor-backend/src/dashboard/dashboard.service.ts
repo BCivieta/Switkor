@@ -12,11 +12,15 @@ export class DashboardService {
   ) {}
 
   async getDashboardData(user: User) {
+
+    console.log('✅ Entrando en getDashboardData con usuario:', user.id);
     // 1. Obtener los planes actuales y anteriores (máximo 2)
     const plans = await this.planService.getCurrentAndPreviousPlans(user);
+    console.log('📦 Planes obtenidos:', plans.length);
 
     // Extraer todas las sesiones de esos dos planes
     const allSessions = plans.flatMap((plan) => plan.sessions);
+    console.log('📆 Total sesiones obtenidas:', allSessions.length);
     const today = new Date();
 
     // Calcular próxima sesión
