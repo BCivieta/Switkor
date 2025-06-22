@@ -9,28 +9,15 @@ import { PlusIcon, LogOutIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import CustomCalendar from "@/components/CustomCalendar";
 import MobileMenu from "@/components/mobileMenu";
-import { subMonths, format } from "date-fns";
-import { es } from "date-fns/locale";
 import TrainingHistoryChart from "@/components/TrainingHistoryChart";
-
-interface Session {
-  id: number;
-  date: string;
-  weekNumber: number;
-  focus: string;
-  sessionType: string;
-  completed: boolean;
-}
-
-interface DashboardData {
-  allSessions: Session[];
-  completedSessions: Session[];
-}
+import type { DashboardData } from "@/types/dashboard";
 
 export default function DashboardPage() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const logout = useAuthStore((state) => state.logout);
+  const username = useAuthStore((state) => state.name || "");
+
   const [sessionsByDate, setSessionsByDate] = useState<Record<
     string,
     {
@@ -44,22 +31,20 @@ export default function DashboardPage() {
 
   const [nextSessionDate, setNextSessionDate] = useState<string | null>(null);
   const [nextSessionId, setNextSessionId] = useState<number | null>(null);
-  const formatDateKey = (date: Date) => date.toLocaleDateString("sv-SE"); // 'YYYY-MM-DD'
-  const username = useAuthStore((state) => state.name || "");
   const [streak, setStreak] = useState<number>(0);
   const [chartData, setChartData] = useState<
     { month: string; count: number }[]
   >([]);
+
+  const formatDateKey = (date: Date) => date.toLocaleDateString("sv-SE"); // 'YYYY-MM-DD'
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (!token) return;
         
-        const today = new Date();
-        
         const res = await api.get<DashboardData>("/dashboard/data");
-        const { allSessions, completedSessions } = res.data;
+        const { allSessions, nextSession, streak, chartData } = res.data;
 
         const sessionsMap: Record<string, {
           id: number;
@@ -82,52 +67,21 @@ export default function DashboardPage() {
 
         setSessionsByDate(sessionsMap);
 
-        const future = allSessions
-          .filter((s) => !s.completed)
-          .find((s) => {
-            const start = new Date(s.date);
-            const end = new Date(start);
-            end.setHours(23, 59, 59, 999);
-            return end >= today;
-          });
-
-        if (future) {
-          setNextSessionDate(formatDateKey(new Date(future.date)));
-          setNextSessionId(future.id);
+        if (nextSession) {
+          setNextSessionDate(nextSession.date);
+          setNextSessionId(nextSession.id);
+        } else {
+          setNextSessionDate(null);
+          setNextSessionId(null);
         }
 
-        const sorted = completedSessions
-          .map((s) => ({ ...s, dateObj: new Date(s.date) }))
-          .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
-
-        let count = 0;
-        for (const s of sorted) {
-          if (s.dateObj > today) continue;
-          if (s.completed) count++;
-          else break;
-        }
-        setStreak(count);
-
-        // 🆕 Calcular datos para gráfica últimos 6 meses
-        const data: { month: string; count: number }[] = [];
-        for (let i = 5; i >= 0; i--) {
-          const date = subMonths(new Date(), i);
-          const monthLabel = format(date, "MMM yyyy", { locale: es });
-          const cnt = completedSessions.filter((s) => {
-            const d = new Date(s.date);
-            return (
-              d.getMonth() === date.getMonth() &&
-              d.getFullYear() === date.getFullYear()
-            );
-          }).length;
-          data.push({ month: monthLabel, count: cnt });
-        }
-        setChartData(data);
+        setStreak(streak);
+        setChartData(chartData);
       } catch (err) {
         console.error("Error al cargar datos:", err);
       }
     };
-
+        
     fetchData();
   }, [token]);
   // Si aún estamos esperando la respuesta, mostramos un loader
