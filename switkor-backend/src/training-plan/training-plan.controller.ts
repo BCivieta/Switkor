@@ -1,9 +1,10 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
 import { TrainingPlanService } from './training-plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../user/user.entity';
+import { AuthenticatedRequest } from '../types/express';
 
 @Controller('plan')
 export class TrainingPlanController {
@@ -25,5 +26,12 @@ export class TrainingPlanController {
   @Get('all')
   async getAllPlans(@CurrentUser() user: User) {
     return this.trainingPlanService.getAllPlansForUser(user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/current-and-previous')
+  async getCurrentAndPreviousPlans(@Req() req: AuthenticatedRequest) {
+    const user = req.user;
+    return this.trainingPlanService.getCurrentAndPreviousPlans(user);
   }
 }

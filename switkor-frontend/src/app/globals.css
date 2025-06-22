@@ -83,6 +83,19 @@ body {
   color: #166534; /* verde intenso */
 }
 
+/* Sesiones completadas: verde azulado suave */
+.react-calendar__tile.tile-completed {
+  background-color: #bae6fd;    /* sky-200, un celeste suave */
+  color: #065f46 !important;    /* emerald-800 para buen contraste */
+  border-radius: 0.75rem !important;
+  opacity: 0.9;
+}
+
+/* Hover más pronunciado */
+.react-calendar__tile.tile-completed:hover {
+  background-color: #7dd3fc;    /* sky-300 */
+  opacity: 1;
+}
 
 /* Texto responsive en tres tamaños */
 @media (max-width: 450px) {
