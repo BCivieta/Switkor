@@ -31,9 +31,15 @@ export class DashboardService {
       const today = new Date();
 
       // Buscar próxima sesión
+      const normalize = (d: Date) =>
+        new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+      const todayDate = normalize(new Date());
+
       const next = allSessions
         .filter((s) => !s.completed)
-        .find((s) => new Date(s.date) >= today);
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) //Ordena por fecha ascendente
+        .find((s) => normalize(new Date(s.date)) >= todayDate);//Encuentra la primera igual o posterior a hoy
 
       if (next) {
         console.log('➡️ Próxima sesión encontrada:', next.id, next.date);
