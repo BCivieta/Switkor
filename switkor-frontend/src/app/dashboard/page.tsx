@@ -189,7 +189,7 @@ export default function DashboardPage() {
 
           {/* Racha y gráfica */}
           <div className="w-full max-w-[500px] flex flex-col items-center self-center">
-            {streak > 1 && (
+            {streak > 0 && (
               <div className="mt-4 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-center text-base sm:text-lg w-full max-w-md">
                 Llevas una racha de <strong>{streak}</strong> entrenamientos sin
                 fallar. 🎉
