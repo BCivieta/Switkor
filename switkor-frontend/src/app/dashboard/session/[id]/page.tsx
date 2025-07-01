@@ -62,7 +62,9 @@ export default function SessionPage() {
       .patch(`/session/${id}/complete`, null, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then(() => router.push("/session/[id]"))
+      .then(() => {
+        router.refresh();
+      })
       .catch((err) => {
         console.error("Error marcando completada:", err);
         setErrorMessage("No se pudo completar. Inténtalo más tarde.");
