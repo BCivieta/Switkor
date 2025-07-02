@@ -203,13 +203,10 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-sky-900 py-6 text-white text-center text-sm">
+      <footer className="w-full bg-sky-900 py-6 text-white text-center text-sm ">
         <div className="space-x-4">
-          <Link href="#" className="underline">
+          <Link href="/privacy" className="hover:text-sky-300 transition-colors duration-200">
             Política de privacidad
-          </Link>
-          <Link href="#" className="underline">
-            Cookies
           </Link>
         </div>
         <p className="mt-2">© 2025 Switkor</p>

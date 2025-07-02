@@ -158,11 +158,8 @@ export default function LoginPage() {
       {/* ---------- Footer ---------- */}
       <footer className="mt-12 bg-sky-900 py-4 text-center text-sm text-white">
         <div className="space-x-4">
-          <Link href="#" className="underline">
+          <Link href="/privacy" className="hover:text-sky-300 transition-colors duration-200">
             Política de privacidad
-          </Link>
-          <Link href="#" className="underline">
-            Cookies
           </Link>
         </div>
         <p className="mt-2">© 2025 Switkor</p>
