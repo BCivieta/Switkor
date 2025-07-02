@@ -22,4 +22,10 @@ export class User {
 
   @OneToMany(() => TrainingPlan, (plan) => plan.user)
   trainingPlans: TrainingPlan[];
+
+  @Column({ nullable: true })
+  resetPasswordToken?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires?: Date;
 }

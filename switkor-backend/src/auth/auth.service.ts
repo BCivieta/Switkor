@@ -10,6 +10,12 @@ import { LoginDto } from './dto/login.dto';
 import { User } from '../user/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../auth/email.service';
+import * as crypto from 'crypto';
+import { BadRequestException } from '@nestjs/common';
+import { MoreThan } from 'typeorm';
+
+
 
 @Injectable()
 export class AuthService {
@@ -17,6 +23,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
+     private readonly emailService: EmailService,
   ) {}
 
   // Método para registrar un nuevo usuario
@@ -61,4 +68,52 @@ export class AuthService {
       access_token: token,
     };
   }
+
+  async sendResetEmail(email: string): Promise<{ message: string }> {
+    // Buscar usuario
+    const user = await this.userRepo.findOne({ where: { email } });
+    if (!user) {
+      // No revelar si no existe para evitar fugas de información
+      return { message: 'Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación.' };
+    }
+
+    // Generar token seguro
+    const token = crypto.randomBytes(32).toString('hex');
+
+    // Guardar token y expiración (ejemplo 1 hora)
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(Date.now() + 3600 * 1000);
+    await this.userRepo.save(user);
+
+    // Enviar email con token
+    await this.emailService.sendPasswordReset(email, token);
+
+    return { message: 'Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación.' };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  // Buscar usuario con token válido y no expirado
+  const user = await this.userRepo.findOne({
+    where: {
+      resetPasswordToken: token,
+      resetPasswordExpires: MoreThan(new Date()), // import MoreThan de typeorm
+    },
+  });
+
+  if (!user) {
+    throw new BadRequestException('Token inválido o expirado');
+  }
+
+  // Hashear la nueva contraseña
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+
+  // Limpiar token y expiración
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
+
+  await this.userRepo.save(user);
+
+  return { message: 'Contraseña actualizada correctamente' };
+}
 }

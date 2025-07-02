@@ -21,14 +21,6 @@ export class Exercise {
   @Column()
   level: string; // 'beginner', 'intermediate', 'advanced'
 
-  @Column({
-    type: 'enum',
-    enum: Goal,
-    array: true,
-    default: [Goal.MUSCLE_GAIN, Goal.STRENGTH, Goal.HEALTH],
-  })
-  goal: Goal[];
-
   @Column({ default: 'main_basic' })
   category:
     | 'main_basic'
