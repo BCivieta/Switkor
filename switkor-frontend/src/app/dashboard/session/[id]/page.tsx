@@ -25,9 +25,7 @@ export default function SessionPage() {
         const res = await api.get<Session>(`/session/${String(id)}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        //debug
-        console.log("Sesión recibida:", res.data);
-        //debug
+
         setSession(res.data);
       } catch (error) {
         console.error("Error al cargar la sesión:", error);
@@ -64,7 +62,9 @@ export default function SessionPage() {
       .patch(`/session/${id}/complete`, null, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then(() => router.push("/dashboard"))
+      .then(() => {
+        router.refresh();
+      })
       .catch((err) => {
         console.error("Error marcando completada:", err);
         setErrorMessage("No se pudo completar. Inténtalo más tarde.");
@@ -133,16 +133,21 @@ export default function SessionPage() {
             {session.dayOfWeek} - {new Date(session.date).toLocaleDateString()}
           </h1>
           {/* Checkbox para completar sesion */}
-          <label className="flex items-center space-x-2 mb-4">
-            <input
-              type="checkbox"
-              checked={session.completed}
-              onChange={handleComplete}
-              disabled={marking}
-              className="form-checkbox h-5 w-5 text-emerald-500"
-            />
-            <span className="text-sm font-medium">Completada</span>
-          </label>
+          <div className="mb-4">
+            {session.completed ? (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 border border-emerald-400 text-emerald-700 font-medium text-sm shadow-sm">
+                ✔️ Sesión completada
+              </div>
+            ) : (
+              <button
+                onClick={handleComplete}
+                disabled={marking}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-400 text-gray-800 font-medium text-sm hover:bg-gray-200 hover:border-gray-500 transition"
+              >
+                ✅ Marcar como completada
+              </button>
+            )}
+          </div>
 
           {/* Mostrar error si la petición devuelve 400 */}
           {errorMessage && (
@@ -157,12 +162,6 @@ export default function SessionPage() {
               </button>
             </div>
           )}
-          {/* Mensaje verde si ya completada */}
-          {session.completed && (
-            <div className="mb-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
-              <span>Esta sesión ya fue completada 💪</span>
-            </div>
-          )}   
           {/* Card gris*/}
           <div className=" bg-gray-50 rounded-3xl p-4 sm:p-6 shadow-inner px-1 sm:px-6">
             {/* Etiquetas */}

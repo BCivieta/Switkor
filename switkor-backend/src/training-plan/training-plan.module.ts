@@ -5,7 +5,7 @@ import { TrainingPlanService } from './training-plan.service';
 import { TrainingPlanController } from './training-plan.controller';
 import { TrainingSession } from '../training-session/training-session.entity';
 import { TrainingExercise } from '../training-session/training-exercise.entity';
-import { Exercise } from '../exercise/exercise.entity';
+import { ExerciseModule } from '../exercise/exercise.module';
 
 @Module({
   imports: [
@@ -13,8 +13,8 @@ import { Exercise } from '../exercise/exercise.entity';
       TrainingPlan,
       TrainingSession,
       TrainingExercise,
-      Exercise,
     ]),
+    ExerciseModule,
   ],
   providers: [TrainingPlanService],
   controllers: [TrainingPlanController],
