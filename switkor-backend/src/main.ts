@@ -6,11 +6,10 @@ async function bootstrap() {
 
   // 🔐 Habilita CORS para permitir comunicación con el frontend
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL?.split(',') ?? [],
     credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();
-
