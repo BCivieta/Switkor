@@ -184,7 +184,7 @@ export default function RegisterPage() {
               {...register("termsAccepted", { required: true })}
               className="h-4 w-4 rounded border-gray-300 text-sky-600 accent-sky-600"
             />
-            <span>Acepto la política de privacidad y cookies</span>
+            <span>Acepto la política de privacidad</span>
           </div>
           {errors.termsAccepted && (
             <p className="text-red-600 text-xs sm:text-sm mt-1">

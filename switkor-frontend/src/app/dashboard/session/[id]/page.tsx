@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth-store";
@@ -13,7 +13,6 @@ import type { Session, Exercise } from "@/types/plan";
 
 export default function SessionPage() {
   const { id } = useParams();
-  const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const [session, setSession] = useState<Session | null>(null);
   const [marking, setMarking] = useState(false);
@@ -63,7 +62,8 @@ export default function SessionPage() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
-        router.refresh();
+        setSession(prev => prev ? { ...prev, completed: true } : prev); // Marca completada en el estado local
+        setMarking(false);
       })
       .catch((err) => {
         console.error("Error marcando completada:", err);

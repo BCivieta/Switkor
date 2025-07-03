@@ -13,7 +13,7 @@ export class EmailService {
   }
 
   async sendPasswordReset(to: string, token: string) {
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_PUBLIC_URL}/reset-password?token=${token}`;
     console.log(`Enviando email a: ${to} con token: ${token}`);
     try {
       const result = await this.resend.emails.send({
