@@ -1,36 +1,40 @@
 // src/app/page.tsx
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { BoltIcon, ClockIcon, AdjustmentsVerticalIcon, ShareIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import MobileMenu from '../components/mobileMenu';
-import { Dumbbell, CalendarClock, Users } from "lucide-react";
-import ContactForm from '../components/ContactForm';
-
-
+import Link from "next/link";
+import {
+  BoltIcon,
+  ClockIcon,
+  AdjustmentsVerticalIcon,
+  ShareIcon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import MobileMenu from "../components/mobileMenu";
+import { Dumbbell, CalendarClock } from "lucide-react";
+import ContactForm from "../components/ContactForm";
 
 export default function LandingPage() {
   return (
     <main className="flex flex-col items-center text-gray-800">
       {/* Header */}
       <header className="w-full flex justify-between items-center px-6 py-4 bg-white shadow-md sticky top-0 z-10">
-         {/* Logo */}
+        {/* Logo */}
         <div className="flex items-center gap-2">
-           <Image
+          <Image
             src="/logoSinLetras.png"
             alt="Switkor"
             width={48}
             height={48}
             className="h-18 w-auto"
           />
-          <span className=" text-2xl sm:text-3xl font-bold text-[#1A3F4E]">Switkor</span>
+          <span className=" text-2xl sm:text-3xl font-bold text-[#1A3F4E]">
+            Switkor
+          </span>
         </div>
         {/* Menú visible en desktop */}
         <nav className="hidden lg:flex gap-6">
-          <Link href="#">Inicio</Link>
-          <Link href="#planes">Planes</Link>
-          <Link href="#ejemplo">Ejemplo de sesión</Link>
+          <Link href="#inicio">Inicio</Link>
+          <Link href="#como-funciona">Como funciona</Link>
           <Link href="#contacto">Contacto</Link>
         </nav>
         <div className="hidden lg:flex gap-2">
@@ -47,25 +51,24 @@ export default function LandingPage() {
             Registrarse
           </Link>
         </div>
-         {/* Menú hamburguesa en móvil */}
+        {/* Menú hamburguesa en móvil */}
         <div className="flex items-center gap-2 lg:hidden">
           <MobileMenu
             links={[
-              { href: '#', label: 'Inicio' },
-              { href: '#planes', label: 'Planes' },
-              { href: '#ejemplo', label: 'Ejemplo de sesión' },
-              { href: '#contacto', label: 'Contacto' },
+              { href: "#inicio", label: "Inicio" },
+              { href: "#como-funciona", label: "Como funciona" },
+              { href: "#contacto", label: "Contacto" },
             ]}
             actions={[
-              { label: 'Iniciar sesión', href: '/login' },
-              { label: 'Registrarse', href: '/register', isPrimary: true },
+              { label: "Iniciar sesión", href: "/login" },
+              { label: "Registrarse", href: "/register", isPrimary: true },
             ]}
           />
         </div>
       </header>
 
       {/* Hero principal */}
-      <section className="w-full max-w-6xl px-4 py-16">
+      <section id="inicio" className="scroll-mt-35 w-full max-w-6xl px-4 py-16">
         <div className="relative rounded-3xl overflow-hidden h-[500px] shadow-lg">
           <Image
             src="/Landing.png"
@@ -86,126 +89,143 @@ export default function LandingPage() {
             href="/login"
             className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-8 py-3 rounded-full text-base sm:text-lg font-semibold hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200"
           >
-            EMPIEZA GRATIS
+            EXPLORA EL PROTOTIPO
           </Link>
         </div>
       </section>
 
       {/* Beneficios cortos */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center px-4 mb-20">
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center px-4 mb-20">
         <div>
           <Dumbbell className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
-          <h3 className="text-base sm:text-lg font-semibold mb-2">Planes adaptados</h3>
-          <p className="text-sm sm:text-base">Entrenamientos según tu nivel y objetivos</p>
+          <h3 className="text-base sm:text-lg font-semibold mb-2">
+            Planes adaptados
+          </h3>
+          <p className="text-sm sm:text-base">
+            Entrenamientos según tu nivel y objetivo
+          </p>
         </div>
         <div>
           <CalendarClock className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
-          <h3 className="text-base sm:text-lg font-semibold mb-2">Automático y flexible</h3>
-          <p className="text-sm sm:text-base">Generación automática según disponibilidad</p>
-        </div>
-        <div>
-          <Users className="mx-auto mb-2 w-8 h-8 text-emerald-600" />
-          <h3 className="text-base sm:text-lg font-semibold mb-2">Conecta y comparte</h3>
-          <p className="text-sm sm:text-base">Comparte tus progresos con la comunidad</p>
+          <h3 className="text-base sm:text-lg font-semibold mb-2">
+            Automático y flexible
+          </h3>
+          <p className="text-sm sm:text-base">
+            Generación automática según disponibilidad
+          </p>
         </div>
       </section>
 
       {/* Por qué elegir Switkor */}
       <section className="w-full max-w-4xl px-4 mb-20">
-        <h2 className=" text-xl sm:text-2xl font-bold text-center mb-10"> ¿Por qué elegir Switkor?</h2>
+        <h2 className=" text-xl sm:text-2xl font-bold text-center mb-10">
+          {" "}
+          ¿Por qué elegir Switkor?
+        </h2>
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <BoltIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Entrena con lógica, no con suposiciones.</strong> Switkor genera planes realistas y eficientes según objetivos y nivel.
+              <strong>
+                Aplicación que crea entrenamientos de manera automática.
+              </strong>{" "}
+              Introduce tus variables y la logica de switkor hara su magia.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <ClockIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Ahorra tiempo y esfuerzo</strong> en la planificación. Solo rellena tu perfil y listo.
+              <strong>
+                Podrás ver tu planificación de cuatro semanas en un calendario
+                interactivo.
+              </strong>{" "}
+              Navega por tus sesiones y pincha para ver los detalles de cada una
+              de ellas.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <AdjustmentsVerticalIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Adáptate a tu carga semanal.</strong> Cada semana el sistema ajusta tu plan.
+              <strong>Podrás ver metricas sobre tu regularidad</strong>como
+              racha de entrenos sin fallar y entrenamientos que has realizado
+              cada mes.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <ShareIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Comparte tu progreso</strong> con quien quieras.
+              <strong>Proximamente funcionalidad social</strong> para que
+              compartas tus progresos.
             </p>
           </div>
         </div>
       </section>
-
-      {/* Planes */}
-      <section id="planes" className="w-full max-w-6xl px-4 mb-20">
-        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">Nuestros planes</h2>
+      {/* Cómo funciona */}
+      <section
+        id="como-funciona"
+        className="scroll-mt-35 w-full max-w-6xl px-4 mb-20"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">
+          ¿Cómo funciona?
+        </h2>
         <div className="grid md:grid-cols-3 gap-6">
+          {/* Paso 1 */}
           <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
-            <span className="absolute top-2 left-2 text-xs font-bold bg-green-100 text-emerald-800 px-2 py-1 rounded-full">
-              Gratuito
+            <span className="absolute top-2 left-2 text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">
+              Paso 1
             </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Gratuito</h3>
-            <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Generador básico de planes</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso limitado a funciones</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Registro gratuito</li>
-            </ul>
-            <p className="font-semibold mb-2">0 € / mes</p>
-            <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">
-              Empieza gratis
-            </Link>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
+              Regístrate y completa tu perfil
+            </h3>
+            <p className="text-xs sm:text-base text-left">
+              Crea una cuenta gratuita, introduce tus datos básicos y objetivos.
+              No usamos cookies y respetamos tu privacidad.
+            </p>
           </div>
-
+          {/* Paso 2 */}
           <div className="relative border-2 border-emerald-500 rounded-xl p-6 shadow-xl text-center bg-green-50">
             <span className="absolute top-2 left-2 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-              El más popular
+              Paso 2
             </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Premium Individual</h3>
-            <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Planes personalizados</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Estadísticas y seguimiento</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Integración con wearables</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad global</li>
-            </ul>
-            <p className="font-semibold mb-2">12,99 € / mes</p>
-            <Link href="/login" className="inline-block bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-medium px-4 py-2 rounded-full hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200">
-              Quiero ser premium
-            </Link>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
+              Recibe tu plan personalizado
+            </h3>
+            <p className="text-sm sm:text-base text-left">
+              La app genera automáticamente un plan de entrenamiento semanal
+              adaptado a tu nivel, tiempo disponible y objetivos.
+            </p>
           </div>
-
+          {/* Paso 3 */}
           <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
             <span className="absolute top-2 left-2 text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              Ideal para clubs
+              Paso 3
             </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">Plan Compartido</h3>
-            <ul className="text-sm space-y-1 mb-4 text-left">
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Entrenamiento coordinado</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Acceso premium para miembros</li>
-              <li className="flex items-center text-xs sm:text-sm gap-2"><CheckCircleIcon className="h-5 w-5 text-emerald-500" /> Comunidad privada</li>
-            </ul>
-            <p className="font-semibold mb-2">29,99 € / grupo</p>
-            <Link href="/login" className="inline-block bg-green-100 text-sm sm:text-base text-emerald-700 font-medium px-4 py-2 rounded-full">
-              Registrar mi grupo
-            </Link>
+            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
+              Entrena, mejora y comparte
+            </h3>
+            <p className="text-sm sm:text-base text-left">
+              Usa la app, marca tus sesiones completadas y sigue tu evolución.
+              Es un prototipo en desarrollo, tu feedback nos ayuda.
+            </p>
           </div>
         </div>
       </section>
 
       {/* Contacto */}
       <section id="contacto" className="w-full max-w-3xl px-4 mb-20">
-        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">¿Tienes una duda, una propuesta o quieres colaborar?</h2>
-            <ContactForm />
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-10">
+          ¿Quieres darnos tu feedback, hacer alguna propuesta, o tienes alguna duda?
+        </h2>
+        <ContactForm />
       </section>
 
       {/* Footer */}
       <footer className="w-full bg-sky-900 py-6 text-white text-center text-sm ">
         <div className="space-x-4">
-          <Link href="/privacy" className="hover:text-sky-300 transition-colors duration-200">
+          <Link
+            href="/privacy"
+            className="hover:text-sky-300 transition-colors duration-200"
+          >
             Política de privacidad
           </Link>
         </div>
