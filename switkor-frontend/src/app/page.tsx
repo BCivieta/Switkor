@@ -4,13 +4,13 @@
 import Link from "next/link";
 import {
   BoltIcon,
-  ClockIcon,
   AdjustmentsVerticalIcon,
   ShareIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import MobileMenu from "../components/mobileMenu";
-import { Dumbbell, CalendarClock } from "lucide-react";
+import { UserPlus, Dumbbell, BarChart3, CalendarClock, CalendarDays } from "lucide-react";
+import { motion } from "framer-motion";
 import ContactForm from "../components/ContactForm";
 
 export default function LandingPage() {
@@ -27,7 +27,7 @@ export default function LandingPage() {
             height={48}
             className="h-18 w-auto"
           />
-          <span className=" text-2xl sm:text-3xl font-bold text-[#1A3F4E]">
+          <span className=" text-2xl sm:text-3xl font-bold text-[#123344]">
             Switkor
           </span>
         </div>
@@ -116,11 +116,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Por qué elegir Switkor */}
+      {/* Qué es Switkor */}
       <section className="w-full max-w-4xl px-4 mb-20">
         <h2 className=" text-xl sm:text-2xl font-bold text-center mb-10">
           {" "}
-          ¿Por qué elegir Switkor?
+          ¿Qué es Switkor?
         </h2>
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
@@ -133,7 +133,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
-            <ClockIcon className="w-8 h-8 text-emerald-600" />
+            <CalendarDays className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
               <strong>
                 Podrás ver tu planificación de cuatro semanas en un calendario
@@ -146,7 +146,7 @@ export default function LandingPage() {
           <div className="p-6 rounded-xl bg-white shadow-md flex gap-4">
             <AdjustmentsVerticalIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Podrás ver metricas sobre tu regularidad</strong>como
+              <strong>Podrás ver metricas sobre tu regularidad, </strong>como
               racha de entrenos sin fallar y entrenamientos que has realizado
               cada mes.
             </p>
@@ -169,45 +169,65 @@ export default function LandingPage() {
           ¿Cómo funciona?
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Paso 1 */}
-          <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
-            <span className="absolute top-2 left-2 text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">
-              Paso 1
-            </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
-              Regístrate y completa tu perfil
-            </h3>
-            <p className="text-xs sm:text-base text-left">
-              Crea una cuenta gratuita, introduce tus datos básicos y objetivos.
-              No usamos cookies y respetamos tu privacidad.
-            </p>
-          </div>
-          {/* Paso 2 */}
-          <div className="relative border-2 border-emerald-500 rounded-xl p-6 shadow-xl text-center bg-green-50">
-            <span className="absolute top-2 left-2 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-              Paso 2
-            </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
-              Recibe tu plan personalizado
-            </h3>
-            <p className="text-sm sm:text-base text-left">
-              La app genera automáticamente un plan de entrenamiento semanal
-              adaptado a tu nivel, tiempo disponible y objetivos.
-            </p>
-          </div>
-          {/* Paso 3 */}
-          <div className="relative border rounded-xl p-6 shadow-lg text-center bg-gray-50">
-            <span className="absolute top-2 left-2 text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              Paso 3
-            </span>
-            <h3 className="font-bold text-base sm:text-lg mb-4 mt-4">
-              Entrena, mejora y comparte
-            </h3>
-            <p className="text-sm sm:text-base text-left">
-              Usa la app, marca tus sesiones completadas y sigue tu evolución.
-              Es un prototipo en desarrollo, tu feedback nos ayuda.
-            </p>
-          </div>
+           {/* Paso 1 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="relative border rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 bg-blue-50 hover:-translate-y-1 transform text-center"
+        >
+          <span className="absolute top-2 left-2 text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full shadow-sm">
+            Paso 1
+          </span>
+          <UserPlus className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+          <h3 className="font-bold text-base sm:text-lg mb-4">
+            Regístrate y completa tu perfil
+          </h3>
+          <p className="text-sm sm:text-base text-left">
+            Crea una cuenta gratuita, introduce tus datos básicos y objetivos. No usamos cookies y respetamos tu privacidad.
+          </p>
+        </motion.div>
+
+        {/* Paso 2 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="relative border-2 border-emerald-400 rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 bg-emerald-50 hover:-translate-y-1 transform text-center"
+        >
+          <span className="absolute top-2 left-2 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full shadow-sm">
+            Paso 2
+          </span>
+          <Dumbbell className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+          <h3 className="font-bold text-base sm:text-lg mb-4">
+            Recibe tu plan personalizado
+          </h3>
+          <p className="text-sm sm:text-base text-left">
+            La app genera automáticamente un plan de entrenamiento semanal adaptado a tu nivel, tiempo disponible y objetivos.
+          </p>
+        </motion.div>
+
+        {/* Paso 3 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="relative border rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 bg-purple-50 hover:-translate-y-1 transform text-center"
+        >
+          <span className="absolute top-2 left-2 text-xs font-bold bg-purple-100 text-purple-800 px-2 py-1 rounded-full shadow-sm">
+            Paso 3
+          </span>
+          <BarChart3 className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+          <h3 className="font-bold text-base sm:text-lg mb-4">
+            Entrena, mejora y comparte
+          </h3>
+          <p className="text-sm sm:text-base text-left">
+            Usa la app, marca tus sesiones completadas y sigue tu evolución. Es un prototipo en desarrollo, tu feedback nos ayuda.
+          </p>
+        </motion.div>
         </div>
       </section>
 
