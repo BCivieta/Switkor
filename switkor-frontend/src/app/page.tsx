@@ -196,8 +196,8 @@ export default function LandingPage() {
               Regístrate y completa tu perfil
             </h3>
             <p className="text-sm sm:text-base text-left">
-              Crea una cuenta gratuita, introduce tus datos básicos y objetivos.
-              No usamos cookies y respetamos tu privacidad.
+              Crea una cuenta gratuita,no usamos cookies y respetamos tu privacidad.
+              Pincha en crear un plan nuevo e introduce tus datos básicos.
             </p>
           </motion.div>
 
