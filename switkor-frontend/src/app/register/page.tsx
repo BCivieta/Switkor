@@ -1,3 +1,4 @@
+//Switkor\switkor-frontend\src\app\register\page.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
