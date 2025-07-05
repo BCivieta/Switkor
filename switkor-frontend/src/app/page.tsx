@@ -27,7 +27,7 @@ export default function LandingPage() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <Image
-            src="/logoSinLetras.png"
+            src="/LogoSinLetras.png"
             alt="Switkor"
             width={48}
             height={48}
