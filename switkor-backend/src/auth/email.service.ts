@@ -17,7 +17,7 @@ export class EmailService {
     console.log(`Enviando email a: ${to} con token: ${token}`);
     try {
       const result = await this.resend.emails.send({
-        from: 'Switkor <onboarding@resend.dev>',
+        from: 'Switkor <no-reply@blancacivieta.es>',
         to,
         subject: 'Restablece tu contraseña en Switkor',
         html: `
