@@ -1,49 +1,50 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import type { AxiosError } from 'axios';
-import { jwtDecode } from 'jwt-decode';
-import { useAuthStore } from '../../store/auth-store';
-import type { LoginDto, JwtPayload } from '../../types/auth';
-
+import { useForm } from "react-hook-form";
+import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import type { AxiosError } from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useAuthStore } from "../../store/auth-store";
+import type { LoginDto, JwtPayload } from "../../types/auth";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm<LoginDto>();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const onSubmit = async (data: LoginDto) => {
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        data,
-      );
+      const res = await api.post("/auth/login", data);
       const token = res.data.access_token;
 
       // Decodifica el token para extraer email, id y opcionalmente name
       const decoded = jwtDecode<JwtPayload>(token);
 
+      // Guardar token según "Recuérdame"
+      if (data.remember) {
+        localStorage.setItem("token", token);
+      } else {
+        sessionStorage.setItem("token", token);
+      }
+
       setAuth({
         token,
         email: decoded.email,
         id: decoded.sub,
-        name: decoded.name ?? '',
+        name: decoded.name ?? "",
       });
 
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (err) {
-    const axiosErr = err as AxiosError<{ message: string }>;
-    setError(
-      axiosErr.response?.data?.message ?? 'Error inesperado',
-    );
-  }
+      const axiosErr = err as AxiosError<{ message: string }>;
+      setError(axiosErr.response?.data?.message ?? "Error inesperado");
+    }
   };
 
   return (
@@ -82,10 +83,15 @@ export default function LoginPage() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 sm:p-10 shadow-lg"
         >
-          <h2 className="text-lg sm:text-2xl font-bold text-sky-900">Iniciar sesión</h2>
+          <h2 className="text-lg sm:text-2xl font-bold text-sky-900">
+            Iniciar sesión
+          </h2>
 
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Usuario:
             </label>
             <input
@@ -94,12 +100,15 @@ export default function LoginPage() {
               placeholder="nombre@mail.com"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
               placeholder:text-xs sm:placeholder:text-sm  text-sm sm:text-base "
-              {...register('email', { required: true })}
+              {...register("email", { required: true })}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm sm:text-base font-medium">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-sm sm:text-base font-medium"
+            >
               Contraseña:
             </label>
             <input
@@ -108,7 +117,7 @@ export default function LoginPage() {
               placeholder="Tu contraseña"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500 
               placeholder:text-xs sm:placeholder:text-sm  text-sm sm:text-base "
-              {...register('password', { required: true })}
+              {...register("password", { required: true })}
             />
           </div>
 
@@ -117,13 +126,16 @@ export default function LoginPage() {
             <label className="flex items-center gap-2 text-xs sm:text-sm">
               <input
                 type="checkbox"
+                {...register("remember")}
                 className="h-4 w-4 rounded border-gray-300 text-sky-600 accent-sky-600"
               />
               Recuérdame
             </label>
 
             {error && (
-              <span className="text-xs sm:text-sm font-medium text-red-600">{error}</span>
+              <span className="text-xs sm:text-sm font-medium text-red-600">
+                {error}
+              </span>
             )}
           </div>
 
@@ -158,7 +170,10 @@ export default function LoginPage() {
       {/* ---------- Footer ---------- */}
       <footer className="mt-12 bg-sky-900 py-4 text-center text-sm text-white">
         <div className="space-x-4">
-          <Link href="/privacy" className="hover:text-sky-300 transition-colors duration-200">
+          <Link
+            href="/privacy"
+            className="hover:text-sky-300 transition-colors duration-200"
+          >
             Política de privacidad
           </Link>
         </div>

@@ -88,6 +88,7 @@ export default function RegisterPage() {
             <input
               id="email"
               type="email"
+              autoComplete="off"
               placeholder="nombre@mail.com"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500 
               text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
@@ -116,6 +117,7 @@ export default function RegisterPage() {
             <input
               id="name"
               type="text"
+              autoComplete="off"
               placeholder="Nombre"
               className="w-full rounded-xl border-none bg-gray-100 px-3 py-2 sm:px-4 sm:py-3 shadow-inner focus:ring-2 focus:ring-sky-500
                text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"

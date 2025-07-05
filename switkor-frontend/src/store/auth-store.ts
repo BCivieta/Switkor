@@ -11,18 +11,18 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
+  token: typeof window !== 'undefined' ? sessionStorage.getItem('token') : null,
   email: null,
   id: null,
   name: null,
 
   setAuth: ({ token, email, id, name }) => {
-    localStorage.setItem('token', token);
     set({ token, email, id, name });
   },
 
   logout: () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     set({ token: null, email: null, id: null, name: null });
   },
 }));
