@@ -43,7 +43,7 @@ export default function LandingPage() {
             Inicio
           </Link>
           <Link href="#como-funciona" className="hover:text-emerald-700">
-            Como funciona
+            Cómo funciona
           </Link>
           <Link href="#contacto" className="hover:text-emerald-700">
             Contacto
@@ -68,7 +68,7 @@ export default function LandingPage() {
           <MobileMenu
             links={[
               { href: "#inicio", label: "Inicio" },
-              { href: "#como-funciona", label: "Como funciona" },
+              { href: "#como-funciona", label: "Cómo funciona" },
               { href: "#contacto", label: "Contacto" },
             ]}
             actions={[
@@ -101,7 +101,7 @@ export default function LandingPage() {
             href="/login"
             className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-8 py-3 rounded-full text-base sm:text-lg font-semibold hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200"
           >
-            EXPLORA EL PROTOTIPO
+            Explora el prototipo
           </Link>
         </div>
       </section>
@@ -117,26 +117,26 @@ export default function LandingPage() {
             <BoltIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
               <strong>
-                Aplicación que crea entrenamientos de manera automática.
+                App que genera entrenamientos de manera automática.
               </strong>{" "}
-              Introduce tus variables y la logica de switkor hara su magia.
+              Introduce tus variables y la lógica de Switkor hará su magia.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-gray-100 shadow-md flex gap-4">
             <CalendarDays className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
               <strong>
-                Podrás ver tu planificación de cuatro semanas en un calendario
+                Te muestra tu planificación de cuatro semanas en un calendario
                 interactivo.
               </strong>{" "}
-              Navega por tus sesiones y pincha para ver los detalles de cada una
+              Navega por tus sesiones y haz clic para ver los detalles de cada una
               de ellas.
             </p>
           </div>
           <div className="p-6 rounded-xl bg-gray-100 shadow-md flex gap-4">
             <AdjustmentsVerticalIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Podrás ver metricas sobre tu regularidad, </strong>como
+              <strong>Revisa métricas sobre tu regularidad, </strong>como
               racha de entrenos sin fallar y entrenamientos que has realizado
               cada mes.
             </p>
@@ -144,7 +144,7 @@ export default function LandingPage() {
           <div className="p-6 rounded-xl bg-gray-100 shadow-md flex gap-4">
             <ShareIcon className="w-8 h-8 text-emerald-600" />
             <p className="text-sm sm:text-base">
-              <strong>Proximamente funcionalidad social</strong> para que
+              <strong>Próximamente funcionalidad social</strong> para que
               compartas tus progresos.
             </p>
           </div>
@@ -196,8 +196,8 @@ export default function LandingPage() {
               Regístrate y completa tu perfil
             </h3>
             <p className="text-sm sm:text-base text-left">
-              Crea una cuenta gratuita,no usamos cookies y respetamos tu privacidad.
-              Pincha en crear un plan nuevo e introduce tus datos básicos.
+              Crea una cuenta gratuita, no usamos cookies y respetamos tu privacidad.
+              Haz clic en crear un plan nuevo e introduce tus datos básicos.
             </p>
           </motion.div>
 
