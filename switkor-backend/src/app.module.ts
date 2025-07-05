@@ -10,6 +10,8 @@ import { TrainingPlanModule } from './training-plan/training-plan.module';
 import { TrainingSessionModule } from './training-session/training-session.module';
 import { ConfigModule } from '@nestjs/config';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AppController } from './app.controller'; 
+import { AppService } from './app.service';       
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, // 👈 solo en desarrollo
+      synchronize: false,
       extra: {
         ssl: {
           rejectUnauthorized: false,
@@ -33,5 +35,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TrainingSessionModule,
     DashboardModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],      
 })
 export class AppModule {}
