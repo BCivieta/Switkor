@@ -92,7 +92,7 @@ export default function SessionPage() {
     warmup: "Bloque Activación 🔥",
     main: "Bloque Principal 🐅",
     global: "Bloque Global 🌍",
-    accessory: "Bloque Complementario ⚡",
+    accessory: "Bloque Accesorio ⚡",
     recovery: "Recuperación 🧘",
   };
 

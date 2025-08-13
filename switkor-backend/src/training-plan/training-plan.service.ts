@@ -168,6 +168,8 @@ export class TrainingPlanService {
                   parsedGoal,
                   session.focus,
                   filteredExercises,
+                  plan.daysPerWeek,
+                  session.dayNumber,
                 );
 
           if (!shouldCopy && session.weekNumber === 1) {
@@ -230,6 +232,8 @@ export class TrainingPlanService {
     goal: Goal,
     focus: string,
     baseList: Exercise[],
+    daysPerWeek?: number,
+    dayNumber?: number,
   ): Promise<
     { exercise: Exercise; sets: number; reps: string; block: ExerciseBlock }[]
   > {
@@ -349,44 +353,50 @@ export class TrainingPlanService {
         armPatterns.includes(e.pattern),
       );
 
-      if (level !== 'beginner') {
-        selected.push(
-          ...this.pickExercises(
-            accessoryLeg,
-            1,
-            accessorySets,
-            mainReps,
-            ExerciseBlock.ACCESSORY,
-          ),
-        );
-        selected.push(
-          ...this.pickExercises(
-            accessoryArm,
-            1,
-            accessorySets,
-            mainReps,
-            ExerciseBlock.ACCESSORY,
-          ),
-        );
-      } else {
-        selected.push(
-          ...this.pickExercises(
-            accessoryLeg,
-            1,
-            2,
-            mainReps,
-            ExerciseBlock.ACCESSORY,
-          ),
-        );
-        selected.push(
-          ...this.pickExercises(
-            accessoryArm,
-            1,
-            2,
-            mainReps,
-            ExerciseBlock.ACCESSORY,
-          ),
-        );
+      // Omitir bloque ACCESSORY si es el día 3 de un plan de 3 días/semana
+      const skipAccessory = daysPerWeek === 3 && dayNumber === 3;
+
+      if (!skipAccessory){
+
+        if (level !== 'beginner') {
+          selected.push(
+            ...this.pickExercises(
+              accessoryLeg,
+              1,
+              accessorySets,
+              mainReps,
+              ExerciseBlock.ACCESSORY,
+            ),
+          );
+          selected.push(
+            ...this.pickExercises(
+              accessoryArm,
+              1,
+              accessorySets,
+              mainReps,
+              ExerciseBlock.ACCESSORY,
+            ),
+          );
+        } else {
+          selected.push(
+            ...this.pickExercises(
+              accessoryLeg,
+              1,
+              2,
+              mainReps,
+              ExerciseBlock.ACCESSORY,
+            ),
+          );
+          selected.push(
+            ...this.pickExercises(
+              accessoryArm,
+              1,
+              2,
+              mainReps,
+              ExerciseBlock.ACCESSORY,
+            ),
+          );
+        }
       }
 
       if (goal === Goal.HEALTH) {
