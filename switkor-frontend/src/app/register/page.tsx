@@ -2,7 +2,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -20,6 +20,7 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterDto>();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: RegisterDto) => {
@@ -28,8 +29,9 @@ export default function RegisterPage() {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      await api.post("/auth/register", {
         email: data.email,
         name: data.name,
         password: data.password,
@@ -39,6 +41,8 @@ export default function RegisterPage() {
     } catch (err) {
       const axiosErr = err as AxiosError<{ message: string }>;
       setError(axiosErr.response?.data?.message ?? "Error inesperado");
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -205,7 +209,29 @@ export default function RegisterPage() {
             type="submit"
             className="w-full rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-2 sm:py-3 text-sm sm:text-lg font-semibold text-white shadow hover:from-emerald-500 hover:to-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
-            Crear cuenta
+            {isLoading && (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                ></path>
+              </svg>
+            )}
+            {isLoading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
       </main>

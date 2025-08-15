@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { AuthProvider } from '../components/AuthProvider'
+import WarmupPing from "@/components/WarmupPing";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
          <AuthProvider>
           {children}
         </AuthProvider>
+        <WarmupPing />
       </body>
     </html>
   );

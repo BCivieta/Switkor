@@ -10,8 +10,10 @@ import { TrainingPlanModule } from './training-plan/training-plan.module';
 import { TrainingSessionModule } from './training-session/training-session.module';
 import { ConfigModule } from '@nestjs/config';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { HealthModule } from './health/health.module';
 import { AppController } from './app.controller'; 
-import { AppService } from './app.service';       
+import { AppService } from './app.service';  
+     
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { AppService } from './app.service';
     TrainingPlanModule,
     TrainingSessionModule,
     DashboardModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],      
