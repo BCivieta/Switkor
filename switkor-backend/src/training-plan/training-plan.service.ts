@@ -356,8 +356,7 @@ export class TrainingPlanService {
       // Omitir bloque ACCESSORY si es el día 3 de un plan de 3 días/semana
       const skipAccessory = daysPerWeek === 3 && dayNumber === 3;
 
-      if (!skipAccessory){
-
+      if (!skipAccessory) {
         if (level !== 'beginner') {
           selected.push(
             ...this.pickExercises(

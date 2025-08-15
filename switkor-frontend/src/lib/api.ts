@@ -5,6 +5,7 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   // Si más adelante se usan cookies httpOnly, cambio a true.
   withCredentials: false,
+  headers: { 'Content-Type': 'application/json' },
 });
 
 // Añade el token JWT a cada petición si existe
