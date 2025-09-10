@@ -58,16 +58,26 @@ export default function SessionPage() {
     setErrorMessage(null);
     setMarking(true);
     api
-      .patch(`/session/${id}/complete`, null, {
+      .patch(`/session/${id}/complete`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
-        setSession(prev => prev ? { ...prev, completed: true } : prev); // Marca completada en el estado local
+        setSession((prev) => (prev ? { ...prev, completed: true } : prev)); // Marca completada en el estado local
         setMarking(false);
       })
       .catch((err) => {
-        console.error("Error marcando completada:", err);
-        setErrorMessage("No se pudo completar. Inténtalo más tarde.");
+        const data = err?.response?.data;
+        let backendMsg: string | null = null;
+        if (typeof data === "string") backendMsg = data;
+        else if (data?.message)
+          backendMsg = Array.isArray(data.message)
+            ? data.message.join(" | ")
+            : data.message;
+        else if (data?.error) backendMsg = data.error;
+
+        setErrorMessage(
+          backendMsg || "No se pudo completar. Inténtalo más tarde."
+        );
         setMarking(false);
       });
   };

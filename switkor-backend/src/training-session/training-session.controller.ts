@@ -1,5 +1,4 @@
 import { Controller, Get, Param, UseGuards, Patch, Req } from '@nestjs/common';
-import { Request } from 'express';
 import { TrainingSessionService } from './training-session.service';
 import { AuthGuard } from '@nestjs/passport';
 import { NotFoundException } from '@nestjs/common';
@@ -19,18 +18,19 @@ export class TrainingSessionController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  async getSessionById(@Param('id') id: number) {
+  async getSessionById(@Param('id') id: number, @Req() req: AuthenticatedRequest)  {
     const session = await this.trainingSessionService.getSessionById(
       Number(id),
+      req.user.id
     );
     if (!session) {
       throw new NotFoundException('Sesión no encontrada');
     }
     return session;
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id/complete')
-  async completeSession(@Param('id') id: string) {
-    return this.trainingSessionService.markComplete(+id);
+  async completeSession(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.trainingSessionService.markComplete(+id, req.user.id);
   }
 }
