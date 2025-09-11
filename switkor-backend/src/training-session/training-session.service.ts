@@ -50,20 +50,18 @@ export class TrainingSessionService {
       throw new NotFoundException(`Sesión con id ${id} no encontrada.`);
     }
 
-    // Normaliza a YYYY-MM-DD "neutro"
-    const toYmd = (d: Date | string) => {
-      const dt = d instanceof Date ? d : new Date(d);
-      const tzOffsetMs = dt.getTimezoneOffset() * 60_000;
-      return new Date(dt.getTime() - tzOffsetMs).toISOString().slice(0, 10);
-    };
+    const toYmd = (d: Date | string): string =>
+    (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d))
+      ? d
+      : new Date(d).toLocaleDateString('sv-SE');
 
-    const todayYmd = toYmd(new Date());
-    const sessionYmd = toYmd(session.date);
+  const todayYmd   = new Date().toLocaleDateString('sv-SE');
+  const sessionYmd = toYmd(session.date);
 
     if (todayYmd !== sessionYmd) {
-      const fechaStr = sessionYmd.split('-').reverse().join('/'); // DD/MM/YYYY
+      const [y, m, da] = sessionYmd.split('-');
       throw new BadRequestException(
-        `Hoy no toca completar esta sesión. La sesión es el ${fechaStr}.`,
+        `Hoy no toca completar esta sesión. La sesión es el ${da}/${m}/${y}.`,
       );
     }
 
